@@ -27,6 +27,9 @@ before_install:
   # For building, everything is available in nexus.senbox.net, which is stored in pom.xml,
   # so we just completely remove the default repositories settings
   - sed -i -n '/<repositories>/{p; :a; N; /<\/repositories>/!ba; s/.*\n//}; p' ~/.m2/settings.xml
+  # Decrypt SSH key for deployment
+  - openssl aes-256-cbc -K $encrypted_c14feca833bf_key -iv $encrypted_c14feca833bf_iv -in maintenance/id_rsa_deploynbm.enc -out ~/.ssh/id_rsa_deploynbm -d
+  - ssh deploynbm@step.esa.int hello
 
 install:
   - true

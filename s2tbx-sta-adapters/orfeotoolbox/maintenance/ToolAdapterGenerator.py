@@ -244,7 +244,7 @@ def getXMLRoot(applicationName, info, vmFile, version, envVarTool):
     met.text = "false"
 
     met = ET.SubElement(root, "menuLocation")
-    met.text = "Menu/Raster/Image Analysis"
+    met.text = "Menu/Optical/OrfeoToolbox"
 
     met = ET.SubElement(root, "preprocessTool")
     met.text = "false"

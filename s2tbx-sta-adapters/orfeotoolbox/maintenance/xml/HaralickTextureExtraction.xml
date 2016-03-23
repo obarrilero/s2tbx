@@ -21,15 +21,6 @@
     <default>1</default>
   </parameter>
   <parameter>
-    <parameter_type source_parameter_type="ParameterType_RAM">ParameterNumber</parameter_type>
-    <key>ram</key>
-    <name>Available RAM (Mb)</name>
-    <description>Available memory for processing (in MB)</description>
-    <minValue/>
-    <maxValue/>
-    <default>128</default>
-  </parameter>
-  <parameter>
     <parameter_type source_parameter_type="ParameterType_Int">ParameterNumber</parameter_type>
     <key>parameters.xrad</key>
     <name>X Radius</name>
@@ -113,4 +104,4 @@
     <description>Output image containing the selected texture features.</description>
     <hidden/>
   </parameter>
-<cli_args_template>-in {in} -channel {channel} -ram {ram} -parameters.xrad {parameters.xrad} -parameters.yrad {parameters.yrad} -parameters.xoff {parameters.xoff} -parameters.yoff {parameters.yoff} -parameters.min {parameters.min} -parameters.max {parameters.max} -parameters.nbbin {parameters.nbbin} -texture {texture} -out {out}</cli_args_template></root>
+<cli_args_template>-in {in} -channel {channel} -ram 512 -parameters.xrad {parameters.xrad} -parameters.yrad {parameters.yrad} -parameters.xoff {parameters.xoff} -parameters.yoff {parameters.yoff} -parameters.min {parameters.min} -parameters.max {parameters.max} -parameters.nbbin {parameters.nbbin} -texture {texture} -out {out}</cli_args_template></root>

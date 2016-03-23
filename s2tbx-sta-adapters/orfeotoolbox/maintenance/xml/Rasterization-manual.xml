@@ -122,13 +122,4 @@
     <multiline/>
     <optional>False</optional>
   </parameter>
-  <parameter>
-    <parameter_type source_parameter_type="ParameterType_RAM">ParameterNumber</parameter_type>
-    <key>ram</key>
-    <name>Available RAM (Mb)</name>
-    <description>Available memory for processing (in MB)</description>
-    <minValue/>
-    <maxValue/>
-    <default>128</default>
-  </parameter>
-<cli_args_template>-in {in} -out {out} -szx {szx} -szy {szy} -epsg {epsg} -orx {orx} -ory {ory} -spx {spx} -spy {spy} -background {background} -mode {mode} -mode.binary.foreground {mode.binary.foreground} -mode.attribute.field {mode.attribute.field} -ram {ram}</cli_args_template></root>
+  <cli_args_template>-in {in} -out {out} -szx {szx} -szy {szy} -epsg {epsg} -orx {orx} -ory {ory} -spx {spx} -spy {spy} -background {background} -mode {mode} -mode.binary.foreground {mode.binary.foreground} -mode.attribute.field {mode.attribute.field} -ram 512</cli_args_template></root>

@@ -268,7 +268,7 @@ def getXMLRoot(applicationName, info, vmFile, version, envVarTool):
     met.text = os.path.basename(vmFile)
 
     met = ET.SubElement(root, "progressPattern")
-    met.text = ": (\d{1,3})%(?:.+)"
+    met.text = ".*: (\d{1,3})%(?:.+)"
 
     met = ET.SubElement(root, "errorPattern")
     met.text = "itk::ERROR(.+)"

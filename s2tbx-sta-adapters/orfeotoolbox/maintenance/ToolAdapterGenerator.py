@@ -1,3 +1,4 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 """
 TODO: Header
@@ -722,7 +723,10 @@ def run_ToolAdapterGenerator(outputDir, xmlDescriptionProcessing, createAdapter=
 
 
 if __name__ == '__main__':
-    """
-    """
-    outputDir, xmlDescriptionProcessing, createAdapter = getArguments()
-    run_ToolAdapterGenerator(outputDir, xmlDescriptionProcessing, createAdapter)
+    outputDirectory = os.path.join(os.path.dirname(__file__), '..')
+    directoryContainingProcessingXML = os.path.join(os.path.dirname(__file__), 'xml')
+    createAdapter = True
+    listXmlFiles = glob.glob(os.path.join(directoryContainingProcessingXML, "*.xml"))
+    print listXmlFiles
+    for xmlProcessing in listXmlFiles:
+        run_ToolAdapterGenerator(outputDirectory, xmlProcessing, createAdapter)

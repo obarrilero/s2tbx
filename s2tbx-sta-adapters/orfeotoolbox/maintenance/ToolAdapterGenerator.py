@@ -8,24 +8,17 @@ TODO: Parameters
 
 import sys
 import os
+import glob
+import logging
 import lxml.etree as ET
 from xml.parsers.expat import ExpatError
 from collections import OrderedDict
 
 
-#import loggin for debug messages
-import logging
+
 logging.basicConfig()
-# create logger
 logger = logging.getLogger( 'ToolAdapterGenerator' )
 logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler("/tmp/s2TBX.log")
-formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s - %(message)s')
-fh.setFormatter(formatter)
-fh.setLevel(logging.DEBUG)
-logger.addHandler(fh)
-
-
 
 class ExceptionTemplate(Exception):
 
@@ -727,6 +720,5 @@ if __name__ == '__main__':
     directoryContainingProcessingXML = os.path.join(os.path.dirname(__file__), 'xml')
     createAdapter = True
     listXmlFiles = glob.glob(os.path.join(directoryContainingProcessingXML, "*.xml"))
-    print listXmlFiles
     for xmlProcessing in listXmlFiles:
         run_ToolAdapterGenerator(outputDirectory, xmlProcessing, createAdapter)

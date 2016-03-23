@@ -7,7 +7,7 @@
   <description>Perform P+XS pansharpening</description>
   <internal>false</internal>
   <autoWriteSuppressed>false</autoWriteSuppressed>
-  <menuLocation>Menu/Raster/Image Analysis</menuLocation>
+  <menuLocation>Menu/Optical/OrfeoToolbox</menuLocation>
   <preprocessTool>false</preprocessTool>
   <writeForProcessing>false</writeForProcessing>
   <mainToolFileLocation>$OTB_BIN_DIR/$OTB_BINPANSHARPENING_RCS_EXEC</mainToolFileLocation>

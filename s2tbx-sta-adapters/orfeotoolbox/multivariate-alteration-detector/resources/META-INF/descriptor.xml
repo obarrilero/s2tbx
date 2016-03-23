@@ -7,7 +7,7 @@
   <description>Multivariate Alteration Detector</description>
   <internal>false</internal>
   <autoWriteSuppressed>false</autoWriteSuppressed>
-  <menuLocation>Menu/Raster/Image Analysis</menuLocation>
+  <menuLocation>Menu/Optical/OrfeoToolbox</menuLocation>
   <preprocessTool>false</preprocessTool>
   <writeForProcessing>false</writeForProcessing>
   <mainToolFileLocation>$OTB_BIN_DIR/$OTB_BINMULTIVARIATE_ALTERATION_DETECTOR_EXEC</mainToolFileLocation>

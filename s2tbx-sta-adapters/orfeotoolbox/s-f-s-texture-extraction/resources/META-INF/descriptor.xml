@@ -7,7 +7,7 @@
   <description>Computes Structural Feature Set textures on every pixel of the input image selected channel</description>
   <internal>false</internal>
   <autoWriteSuppressed>false</autoWriteSuppressed>
-  <menuLocation>Menu/Raster/Image Analysis</menuLocation>
+  <menuLocation>Menu/Optical/OrfeoToolbox</menuLocation>
   <preprocessTool>false</preprocessTool>
   <writeForProcessing>false</writeForProcessing>
   <mainToolFileLocation>$OTB_BIN_DIR/$OTB_BINS_F_S_TEXTURE_EXTRACTION_EXEC</mainToolFileLocation>

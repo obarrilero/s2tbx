@@ -670,26 +670,25 @@ def createManifest(toolDirectory, dicResult, version):
     """
     appKeySplitted = dicResult['key'].replace("-", ".")
     manifestFile = os.path.join(toolDirectory, "MANIFEST.MF")
-    stringFile = 'Manifest-Version: 1.0\n\
-OpenIDE-Module-Specification-Version: ' + version + '\n\
-OpenIDE-Module-Implementation-Version: ' + version + '\n\
-OpenIDE-Module-Name: ' + appKeySplitted + '\n\
-OpenIDE-Module-Display-Category: Sentinel-2 Toolbox\n\
-OpenIDE-Module-Java-Dependencies: Java > 1.8\n\
-OpenIDE-Module-Type: STA\n\
-OpenIDE-Module-Short-Description: ' + appKeySplitted + '\n\
-OpenIDE-Module: org.esa.s2tbx.' + appKeySplitted + '\n\
-OpenIDE-Module-Alias: ' + appKeySplitted + '\n\
-OpenIDE-Module-Module-Dependencies: org.esa.snap.snap.sta, org.esa.snap.snap.sta.ui\n\
-OpenIDE-Module-Install: org/esa/snap/utils/ModuleInstaller.class\n\
-AutoUpdate-Show-In-Client: false\n\n'
-    f = open(manifestFile, "w")
-    f.write(stringFile)
-    f.close()
 
+    manifest = """
+Manifest-Version: 1.0
+OpenIDE-Module-Specification-Version: {version}
+OpenIDE-Module-Implementation-Version: {version}
+OpenIDE-Module-Name: {appKeySplitted}
+OpenIDE-Module-Display-Category: Sentinel-2 Toolbox
+OpenIDE-Module-Java-Dependencies: Java > 1.8
+OpenIDE-Module-Type: STA
+OpenIDE-Module-Short-Description: {appKeySplitted}
+OpenIDE-Module: org.esa.s2tbx.{appKeySplitted}
+OpenIDE-Module-Alias: {appKeySplitted}
+OpenIDE-Module-Module-Dependencies: org.esa.snap.snap.sta, org.esa.snap.snap.sta.ui
+OpenIDE-Module-Install: org/esa/snap/utils/ModuleInstaller.class
+AutoUpdate-Show-In-Client: false
+""".format( version=version, appKeySplitted=appKeySplitted )
 
-
-
+    with open(manifestFile, "w") as f:
+        f.write(manifest)
 
 def run_ToolAdapterGenerator(outputDir, xmlDescriptionProcessing, createAdapter=False):
     dicResult, applicationName = getInfoFromProcessingXML(xmlDescriptionProcessing)

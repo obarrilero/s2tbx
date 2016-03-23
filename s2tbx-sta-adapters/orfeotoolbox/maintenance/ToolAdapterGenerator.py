@@ -671,7 +671,7 @@ def createManifest(toolDirectory, dicResult, version):
     appKeySplitted = dicResult['key'].replace("-", ".")
     manifestFile = os.path.join(toolDirectory, "MANIFEST.MF")
 
-    manifest = """
+    manifest = """\
 Manifest-Version: 1.0
 OpenIDE-Module-Specification-Version: {version}
 OpenIDE-Module-Implementation-Version: {version}

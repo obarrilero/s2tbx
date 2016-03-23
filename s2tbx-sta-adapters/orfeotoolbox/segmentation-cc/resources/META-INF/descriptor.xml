@@ -46,34 +46,10 @@
       <toolParameterDescriptors/>
     </parameter>
     <parameter>
-      <name>filter_string</name>
-      <alias>Segmentation algorithm</alias>
-      <dataType>java.lang.String</dataType>
-      <defaultValue>cc</defaultValue>
-      <description>Choice of segmentation algorithm (mean-shift by default)</description>
-      <valueSet/>
-      <notNull>false</notNull>
-      <notEmpty>false</notEmpty>
-      <parameterType>RegularParameter</parameterType>
-      <toolParameterDescriptors/>
-    </parameter>
-    <parameter>
       <name>expr_string</name>
       <alias>Condition</alias>
       <dataType>java.lang.String</dataType>
       <description>User defined connection condition, written as a mathematical expression. Available variables are p(i)b(i), intensity_p(i) and distance (example of expression : distance &lt; 10 )</description>
-      <valueSet/>
-      <notNull>false</notNull>
-      <notEmpty>false</notEmpty>
-      <parameterType>RegularParameter</parameterType>
-      <toolParameterDescriptors/>
-    </parameter>
-    <parameter>
-      <name>mode_string</name>
-      <alias>Processing mode</alias>
-      <dataType>java.lang.String</dataType>
-      <defaultValue>vector</defaultValue>
-      <description>Choice of processing mode, either raster or large-scale.</description>
       <valueSet/>
       <notNull>false</notNull>
       <notEmpty>false</notEmpty>

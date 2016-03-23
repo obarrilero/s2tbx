@@ -46,18 +46,6 @@
       <toolParameterDescriptors/>
     </parameter>
     <parameter>
-      <name>filter_string</name>
-      <alias>Segmentation algorithm</alias>
-      <dataType>java.lang.String</dataType>
-      <defaultValue>meanshift</defaultValue>
-      <description>Choice of segmentation algorithm (mean-shift by default)</description>
-      <valueSet/>
-      <notNull>false</notNull>
-      <notEmpty>false</notEmpty>
-      <parameterType>RegularParameter</parameterType>
-      <toolParameterDescriptors/>
-    </parameter>
-    <parameter>
       <name>spatialr_int</name>
       <alias>Spatial radius</alias>
       <dataType>java.lang.Integer</dataType>
@@ -111,18 +99,6 @@
       <dataType>java.lang.Integer</dataType>
       <defaultValue>100</defaultValue>
       <description>Minimum size of a region (in pixel unit) in segmentation. Smaller clusters will be merged to the neighboring cluster with the closest radiometry. If set to 0 no pruning is done.</description>
-      <valueSet/>
-      <notNull>false</notNull>
-      <notEmpty>false</notEmpty>
-      <parameterType>RegularParameter</parameterType>
-      <toolParameterDescriptors/>
-    </parameter>
-    <parameter>
-      <name>mode_string</name>
-      <alias>Processing mode</alias>
-      <dataType>java.lang.String</dataType>
-      <defaultValue>vector</defaultValue>
-      <description>Choice of processing mode, either raster or large-scale.</description>
       <valueSet/>
       <notNull>false</notNull>
       <notEmpty>false</notEmpty>

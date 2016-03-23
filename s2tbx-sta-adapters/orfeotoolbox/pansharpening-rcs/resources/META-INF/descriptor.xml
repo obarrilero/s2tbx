@@ -67,18 +67,6 @@
       <parameterType>RegularParameter</parameterType>
       <toolParameterDescriptors/>
     </parameter>
-    <parameter>
-      <name>method_string</name>
-      <alias>Algorithm</alias>
-      <dataType>java.lang.String</dataType>
-      <defaultValue>rcs</defaultValue>
-      <description>Selection of the pan-sharpening method.</description>
-      <valueSet/>
-      <notNull>false</notNull>
-      <notEmpty>false</notEmpty>
-      <parameterType>RegularParameter</parameterType>
-      <toolParameterDescriptors/>
-    </parameter>
   </parameters>
   <source>user</source>
   <isSystem>false</isSystem>

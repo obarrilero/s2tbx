@@ -46,18 +46,6 @@
       <toolParameterDescriptors/>
     </parameter>
     <parameter>
-      <name>filter_string</name>
-      <alias>Segmentation algorithm</alias>
-      <dataType>java.lang.String</dataType>
-      <defaultValue>watershed</defaultValue>
-      <description>Choice of segmentation algorithm (mean-shift by default)</description>
-      <valueSet/>
-      <notNull>false</notNull>
-      <notEmpty>false</notEmpty>
-      <parameterType>RegularParameter</parameterType>
-      <toolParameterDescriptors/>
-    </parameter>
-    <parameter>
       <name>threshold_float</name>
       <alias>Depth Threshold</alias>
       <dataType>java.lang.Float</dataType>
@@ -75,18 +63,6 @@
       <dataType>java.lang.Float</dataType>
       <defaultValue>0.1</defaultValue>
       <description>flood level for generating the merge tree from the initial segmentation (between 0 and 1)</description>
-      <valueSet/>
-      <notNull>false</notNull>
-      <notEmpty>false</notEmpty>
-      <parameterType>RegularParameter</parameterType>
-      <toolParameterDescriptors/>
-    </parameter>
-    <parameter>
-      <name>mode_string</name>
-      <alias>Processing mode</alias>
-      <dataType>java.lang.String</dataType>
-      <defaultValue>vector</defaultValue>
-      <description>Choice of processing mode, either raster or large-scale.</description>
       <valueSet/>
       <notNull>false</notNull>
       <notEmpty>false</notEmpty>

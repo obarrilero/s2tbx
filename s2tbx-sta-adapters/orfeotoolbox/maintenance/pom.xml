@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>s2tbx-sta-adapters</artifactId>
+        <artifactId>s2tbx-sta-adapters-otb</artifactId>
         <groupId>org.esa.s2tbx</groupId>
         <version>3.0.0-SNAPSHOT</version>
     </parent>
@@ -18,7 +18,7 @@
         At the root of the archive, the SETUP.pdf file contains instructions to install the Sen2Cor. Follow these instruction before integrating this processor into SNAP.</description>
 
     <build>
-        <sourceDirectory>../src/main/java</sourceDirectory>
+        <sourceDirectory>../../src/main/java</sourceDirectory>
         <resources>
             <resource>
                 <directory>resources</directory>

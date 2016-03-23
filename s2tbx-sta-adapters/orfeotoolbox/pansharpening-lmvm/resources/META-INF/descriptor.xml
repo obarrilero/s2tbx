@@ -68,18 +68,6 @@
       <toolParameterDescriptors/>
     </parameter>
     <parameter>
-      <name>method_string</name>
-      <alias>Algorithm</alias>
-      <dataType>java.lang.String</dataType>
-      <defaultValue>lmvm</defaultValue>
-      <description>Selection of the pan-sharpening method.</description>
-      <valueSet/>
-      <notNull>false</notNull>
-      <notEmpty>false</notEmpty>
-      <parameterType>RegularParameter</parameterType>
-      <toolParameterDescriptors/>
-    </parameter>
-    <parameter>
       <name>radiusx_int</name>
       <alias>X radius</alias>
       <dataType>java.lang.Integer</dataType>

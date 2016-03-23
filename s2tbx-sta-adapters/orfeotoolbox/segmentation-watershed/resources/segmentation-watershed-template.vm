@@ -1,13 +1,9 @@
 -in
 $sourceProductFile
--filter
-$filter_string
 -filter.watershed.threshold
 $threshold_float
 -filter.watershed.level
 $level_float
--mode
-$mode_string
 -mode.vector.out
 $out_str
 -mode.vector.outmode

@@ -1,7 +1,5 @@
 -in
 $sourceProductFile
--filter
-$filter_string
 -filter.meanshift.spatialr
 $spatialr_int
 -filter.meanshift.ranger
@@ -12,8 +10,6 @@ $thres_float
 $maxiter_int
 -filter.meanshift.minsize
 $minsize_int
--mode
-$mode_string
 -mode.vector.out
 $out_str
 -mode.vector.outmode

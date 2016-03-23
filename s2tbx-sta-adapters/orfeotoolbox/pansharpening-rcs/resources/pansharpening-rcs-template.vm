@@ -4,5 +4,3 @@ $sourceProductFile
 $sourceProductFile
 -out
 $targetProductFile
--method
-$method_string

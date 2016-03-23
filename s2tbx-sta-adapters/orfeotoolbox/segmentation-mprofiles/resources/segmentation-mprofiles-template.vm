@@ -1,7 +1,5 @@
 -in
 $sourceProductFile
--filter
-$filter_string
 -filter.mprofiles.size
 $size_int
 -filter.mprofiles.start
@@ -10,8 +8,6 @@ $start_int
 $step_int
 -filter.mprofiles.sigma
 $sigma_float
--mode
-$mode_string
 -mode.vector.out
 $out_str
 -mode.vector.outmode

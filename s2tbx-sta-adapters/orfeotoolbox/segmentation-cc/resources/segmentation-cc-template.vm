@@ -1,11 +1,7 @@
 -in
 $sourceProductFile
--filter
-$filter_string
 -filter.cc.expr
 $expr_string
--mode
-$mode_string
 -mode.vector.out
 $out_str
 -mode.vector.outmode

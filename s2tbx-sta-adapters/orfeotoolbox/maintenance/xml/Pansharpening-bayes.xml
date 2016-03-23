@@ -23,27 +23,15 @@
     <key>out</key>
     <name>Output image</name>
     <description> Output image.</description>
-    <hidden />
-  </parameter>
-  <parameter>
-    <parameter_type source_parameter_type="ParameterType_Choice">ParameterSelection</parameter_type>
-    <key>method</key>
-    <name>Algorithm</name>
-    <description>Selection of the pan-sharpening method.</description>
-    <options>
-      <choices>
-        <choice>bayes</choice>
-      </choices>
-    </options>
-    <default>0</default>
+    <hidden/>
   </parameter>
   <parameter>
     <parameter_type source_parameter_type="ParameterType_Float">ParameterNumber</parameter_type>
     <key>method.bayes.lambda</key>
     <name>Weight</name>
     <description>Set the weighting value.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>0.9999</default>
   </parameter>
   <parameter>
@@ -51,8 +39,8 @@
     <key>method.bayes.s</key>
     <name>S coefficient</name>
     <description>Set the S coefficient.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>1</default>
   </parameter>
   <parameter>
@@ -60,8 +48,8 @@
     <key>ram</key>
     <name>Available RAM (Mb)</name>
     <description>Available memory for processing (in MB)</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>128</default>
   </parameter>
-</root>
+<cli_args_template>-inp {inp} -inxs {inxs} -out {out} -method bayes -method.bayes.lambda {method.bayes.lambda} -method.bayes.s {method.bayes.s} -ram {ram}</cli_args_template></root>

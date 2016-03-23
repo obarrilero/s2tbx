@@ -23,27 +23,15 @@
     <key>out</key>
     <name>Output image</name>
     <description> Output image.</description>
-    <hidden />
-  </parameter>
-  <parameter>
-    <parameter_type source_parameter_type="ParameterType_Choice">ParameterSelection</parameter_type>
-    <key>method</key>
-    <name>Algorithm</name>
-    <description>Selection of the pan-sharpening method.</description>
-    <options>
-      <choices>
-        <choice>lmvm</choice>
-        </choices>
-    </options>
-    <default>0</default>
+    <hidden/>
   </parameter>
   <parameter>
     <parameter_type source_parameter_type="ParameterType_Int">ParameterNumber</parameter_type>
     <key>method.lmvm.radiusx</key>
     <name>X radius</name>
     <description>Set the x radius of the sliding window.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>3</default>
   </parameter>
   <parameter>
@@ -51,8 +39,8 @@
     <key>method.lmvm.radiusy</key>
     <name>Y radius</name>
     <description>Set the y radius of the sliding window.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>3</default>
   </parameter>
   <parameter>
@@ -60,8 +48,8 @@
     <key>ram</key>
     <name>Available RAM (Mb)</name>
     <description>Available memory for processing (in MB)</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>128</default>
   </parameter>
-</root>
+<cli_args_template>-inp {inp} -inxs {inxs} -out {out} -method lmvm -method.lmvm.radiusx {method.lmvm.radiusx} -method.lmvm.radiusy {method.lmvm.radiusy} -ram {ram}</cli_args_template></root>

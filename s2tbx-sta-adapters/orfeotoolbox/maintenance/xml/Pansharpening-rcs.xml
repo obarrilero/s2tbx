@@ -23,27 +23,15 @@
     <key>out</key>
     <name>Output image</name>
     <description> Output image.</description>
-    <hidden />
-  </parameter>
-  <parameter>
-    <parameter_type source_parameter_type="ParameterType_Choice">ParameterSelection</parameter_type>
-    <key>method</key>
-    <name>Algorithm</name>
-    <description>Selection of the pan-sharpening method.</description>
-    <options>
-      <choices>
-        <choice>rcs</choice>
-        </choices>
-    </options>
-    <default>0</default>
+    <hidden/>
   </parameter>
   <parameter>
     <parameter_type source_parameter_type="ParameterType_RAM">ParameterNumber</parameter_type>
     <key>ram</key>
     <name>Available RAM (Mb)</name>
     <description>Available memory for processing (in MB)</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>128</default>
   </parameter>
-</root>
+<cli_args_template>-inp {inp} -inxs {inxs} -out {out} -method rcs -ram {ram}</cli_args_template></root>

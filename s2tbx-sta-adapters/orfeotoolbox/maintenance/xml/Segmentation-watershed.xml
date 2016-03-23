@@ -12,24 +12,12 @@
     <optional>False</optional>
   </parameter>
   <parameter>
-    <parameter_type source_parameter_type="ParameterType_Choice">ParameterSelection</parameter_type>
-    <key>filter</key>
-    <name>Segmentation algorithm</name>
-    <description>Choice of segmentation algorithm (mean-shift by default)</description>
-    <options>
-      <choices>
-        <choice>watershed</choice>
-        </choices>
-    </options>
-    <default>0</default>
-  </parameter>
-  <parameter>
     <parameter_type source_parameter_type="ParameterType_Float">ParameterNumber</parameter_type>
     <key>filter.watershed.threshold</key>
     <name>Depth Threshold</name>
     <description>Depth threshold Units in percentage of the maximum depth in the image.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>0.01</default>
   </parameter>
   <parameter>
@@ -37,28 +25,16 @@
     <key>filter.watershed.level</key>
     <name>Flood Level</name>
     <description>flood level for generating the merge tree from the initial segmentation (between 0 and 1)</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>0.1</default>
-  </parameter>
-  <parameter>
-    <parameter_type source_parameter_type="ParameterType_Choice">ParameterSelection</parameter_type>
-    <key>mode</key>
-    <name>Processing mode</name>
-    <description>Choice of processing mode, either raster or large-scale.</description>
-    <options>
-      <choices>
-        <choice>vector</choice>
-        </choices>
-    </options>
-    <default>0</default>
   </parameter>
   <parameter>
     <parameter_type source_parameter_type="ParameterType_OutputVectorData">OutputVector</parameter_type>
     <key>mode.vector.out</key>
     <name>Output vector file</name>
     <description>The output vector file or database (name can be anything understood by OGR)</description>
-    <hidden />
+    <hidden/>
   </parameter>
   <parameter>
     <parameter_type source_parameter_type="ParameterType_Choice">ParameterSelection</parameter_type>
@@ -101,8 +77,8 @@
     <key>mode.vector.minsize</key>
     <name>Minimum object size</name>
     <description>Objects whose size is below the minimum object size (area in pixels) will be ignored during vectorization.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>1</default>
   </parameter>
   <parameter>
@@ -110,8 +86,8 @@
     <key>mode.vector.simplify</key>
     <name>Simplify polygons</name>
     <description>Simplify polygons according to a given tolerance (in pixel). This option allows reducing the size of the output file or database.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>0.1</default>
   </parameter>
   <parameter>
@@ -120,7 +96,7 @@
     <name>Layer name</name>
     <description>Name of the layer in the vector file or database (default is Layer).</description>
     <default>layer</default>
-    <multiline />
+    <multiline/>
     <optional>False</optional>
   </parameter>
   <parameter>
@@ -129,7 +105,7 @@
     <name>Geometry index field name</name>
     <description>Name of the field holding the geometry index in the output vector file or database.</description>
     <default>DN</default>
-    <multiline />
+    <multiline/>
     <optional>False</optional>
   </parameter>
   <parameter>
@@ -137,8 +113,8 @@
     <key>mode.vector.tilesize</key>
     <name>Tiles size</name>
     <description>User defined tiles size for tile-based segmentation. Optimal tile size is selected according to available RAM if null.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>1024</default>
   </parameter>
   <parameter>
@@ -146,8 +122,8 @@
     <key>mode.vector.startlabel</key>
     <name>Starting geometry index</name>
     <description>Starting value of the geometry index field</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>1</default>
   </parameter>
   <parameter>
@@ -155,8 +131,8 @@
     <key>mode.vector.ogroptions</key>
     <name>OGR options for layer creation</name>
     <description>A list of layer creation options in the form KEY=VALUE that will be passed directly to OGR without any validity checking. Options may depend on the file format, and can be found in OGR documentation.</description>
-    <default />
-    <multiline />
+    <default/>
+    <multiline/>
     <optional>True</optional>
   </parameter>
-  </root>
+  <cli_args_template>-in {in} -filter watershed -filter.watershed.threshold {filter.watershed.threshold} -filter.watershed.level {filter.watershed.level} -mode vector -mode.vector.out {mode.vector.out} -mode.vector.outmode {mode.vector.outmode} -mode.vector.inmask {mode.vector.inmask} -mode.vector.neighbor {mode.vector.neighbor} -mode.vector.stitch {mode.vector.stitch} -mode.vector.minsize {mode.vector.minsize} -mode.vector.simplify {mode.vector.simplify} -mode.vector.layername {mode.vector.layername} -mode.vector.fieldname {mode.vector.fieldname} -mode.vector.tilesize {mode.vector.tilesize} -mode.vector.startlabel {mode.vector.startlabel} -mode.vector.ogroptions {mode.vector.ogroptions}</cli_args_template></root>

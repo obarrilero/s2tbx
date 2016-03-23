@@ -16,8 +16,8 @@
     <key>channel</key>
     <name>Selected Channel</name>
     <description>The selected channel index</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>1</default>
   </parameter>
   <parameter>
@@ -25,8 +25,8 @@
     <key>ram</key>
     <name>Available RAM (Mb)</name>
     <description>Available memory for processing (in MB)</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>128</default>
   </parameter>
   <parameter>
@@ -34,8 +34,8 @@
     <key>parameters.xrad</key>
     <name>X Radius</name>
     <description>X Radius</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>2</default>
   </parameter>
   <parameter>
@@ -43,8 +43,8 @@
     <key>parameters.yrad</key>
     <name>Y Radius</name>
     <description>Y Radius</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>2</default>
   </parameter>
   <parameter>
@@ -52,8 +52,8 @@
     <key>parameters.xoff</key>
     <name>X Offset</name>
     <description>X Offset</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>1</default>
   </parameter>
   <parameter>
@@ -61,8 +61,8 @@
     <key>parameters.yoff</key>
     <name>Y Offset</name>
     <description>Y Offset</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>1</default>
   </parameter>
   <parameter>
@@ -70,8 +70,8 @@
     <key>parameters.min</key>
     <name>Image Minimum</name>
     <description>Image Minimum</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>0</default>
   </parameter>
   <parameter>
@@ -79,8 +79,8 @@
     <key>parameters.max</key>
     <name>Image Maximum</name>
     <description>Image Maximum</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>255</default>
   </parameter>
   <parameter>
@@ -88,8 +88,8 @@
     <key>parameters.nbbin</key>
     <name>Histogram number of bin</name>
     <description>Histogram number of bin</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>8</default>
   </parameter>
   <parameter>
@@ -111,6 +111,6 @@
     <key>out</key>
     <name>Output Image</name>
     <description>Output image containing the selected texture features.</description>
-    <hidden />
+    <hidden/>
   </parameter>
-</root>
+<cli_args_template>-in {in} -channel {channel} -ram {ram} -parameters.xrad {parameters.xrad} -parameters.yrad {parameters.yrad} -parameters.xoff {parameters.xoff} -parameters.yoff {parameters.yoff} -parameters.min {parameters.min} -parameters.max {parameters.max} -parameters.nbbin {parameters.nbbin} -texture {texture} -out {out}</cli_args_template></root>

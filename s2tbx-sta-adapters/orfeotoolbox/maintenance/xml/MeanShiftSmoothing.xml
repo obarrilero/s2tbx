@@ -16,22 +16,22 @@
     <key>fout</key>
     <name>Filtered output</name>
     <description>The filtered output image.</description>
-    <hidden />
+    <hidden/>
   </parameter>
   <parameter>
     <parameter_type source_parameter_type="ParameterType_OutputImage">OutputRaster</parameter_type>
     <key>foutpos</key>
     <name>Spatial image</name>
     <description> The spatial image output. Spatial image output is a displacement map (pixel position after convergence).</description>
-    <hidden />
+    <hidden/>
   </parameter>
   <parameter>
     <parameter_type source_parameter_type="ParameterType_Int">ParameterNumber</parameter_type>
     <key>spatialr</key>
     <name>Spatial radius</name>
     <description>Spatial radius of the neighborhood.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>5</default>
   </parameter>
   <parameter>
@@ -39,8 +39,8 @@
     <key>ranger</key>
     <name>Range radius</name>
     <description>Range radius defining the radius (expressed in radiometry unit) in the multi-spectral space.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>15</default>
   </parameter>
   <parameter>
@@ -48,8 +48,8 @@
     <key>thres</key>
     <name>Mode convergence threshold</name>
     <description>Algorithm iterative scheme will stop if mean-shift vector is below this threshold or if iteration number reached maximum number of iterations.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>0.1</default>
   </parameter>
   <parameter>
@@ -57,8 +57,8 @@
     <key>maxiter</key>
     <name>Maximum number of iterations</name>
     <description>Algorithm iterative scheme will stop if convergence hasn't been reached after the maximum number of iterations.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>100</default>
   </parameter>
   <parameter>
@@ -66,8 +66,8 @@
     <key>rangeramp</key>
     <name>Range radius coefficient</name>
     <description>This coefficient makes dependent the ranger of the colorimetry of the filtered pixel : y = rangeramp*x+ranger.</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>0</default>
   </parameter>
   <parameter>
@@ -77,4 +77,4 @@
     <description>If activated pixel iterative convergence is stopped if the path . Be careful, with this option, the result will slightly depend on thread number</description>
     <default>True</default>
   </parameter>
-</root>
+<cli_args_template>-in {in} -fout {fout} -foutpos {foutpos} -spatialr {spatialr} -ranger {ranger} -thres {thres} -maxiter {maxiter} -rangeramp {rangeramp} -modesearch {modesearch}</cli_args_template></root>

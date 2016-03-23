@@ -23,15 +23,15 @@
     <key>out</key>
     <name>Change Map</name>
     <description>Image of detected changes.</description>
-    <hidden />
+    <hidden/>
   </parameter>
   <parameter>
     <parameter_type source_parameter_type="ParameterType_RAM">ParameterNumber</parameter_type>
     <key>ram</key>
     <name>Available RAM (Mb)</name>
     <description>Available memory for processing (in MB)</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>128</default>
   </parameter>
-</root>
+<cli_args_template>-in1 {in1} -in2 {in2} -out {out} -ram {ram}</cli_args_template></root>

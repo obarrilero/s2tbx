@@ -9,7 +9,7 @@
     <key>in</key>
     <name>Input vector dataset</name>
     <description>The input vector dataset to be rasterized</description>
-    <isFolder />
+    <isFolder/>
     <optional>False</optional>
   </parameter>
   <parameter>
@@ -17,7 +17,7 @@
     <key>out</key>
     <name>Ouptut image</name>
     <description>An output image containing the rasterized vector dataset</description>
-    <hidden />
+    <hidden/>
   </parameter>
   <parameter>
     <parameter_type source_parameter_type="ParameterType_InputImage">ParameterRaster</parameter_type>
@@ -31,8 +31,8 @@
     <key>background</key>
     <name>Background value</name>
     <description>Default value for pixels not belonging to any geometry</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>0</default>
   </parameter>
   <parameter>
@@ -53,8 +53,8 @@
     <key>mode.binary.foreground</key>
     <name>Foreground value</name>
     <description>Value for pixels inside a geometry</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>255</default>
   </parameter>
   <parameter>
@@ -63,7 +63,7 @@
     <name>The attribute field to burn</name>
     <description>Name of the attribute field to burn</description>
     <default>DN</default>
-    <multiline />
+    <multiline/>
     <optional>False</optional>
   </parameter>
   <parameter>
@@ -71,8 +71,8 @@
     <key>ram</key>
     <name>Available RAM (Mb)</name>
     <description>Available memory for processing (in MB)</description>
-    <minValue />
-    <maxValue />
+    <minValue/>
+    <maxValue/>
     <default>128</default>
   </parameter>
-</root>
+<cli_args_template>-in {in} -out {out} -im {im} -background {background} -mode {mode} -mode.binary.foreground {mode.binary.foreground} -mode.attribute.field {mode.attribute.field} -ram {ram}</cli_args_template></root>

@@ -8,6 +8,7 @@ TODO: Parameters
 
 import sys
 import os
+import shutil
 import glob
 import logging
 import lxml.etree as ET
@@ -97,12 +98,6 @@ def generateStructure(outputDir, lowerToolName, createAdapter=False):
             ├── META-INF
             │   ├── descriptor.xml
             │   └── MANIFEST.MF
-            ├── org
-            │   └── esa
-            │       └── snap
-            │           └── ui
-            │               └── tooladapter
-            │                   └── layer.xml
             ├── Sen2Cor-post-template.vm
 
 
@@ -115,15 +110,13 @@ def generateStructure(outputDir, lowerToolName, createAdapter=False):
     if not createAdapter:
         metaInfDirectory = os.path.join(toolDirectory, "META-INF")
         resourceDirectory = toolDirectory
-        layerDirectory = None
     else:
         resourceDirectory = os.path.join(toolDirectory, "resources")
         createDirectory(resourceDirectory, "resourceDirectory")
         metaInfDirectory = os.path.join(resourceDirectory, "META-INF")
-        layerDirectory = os.path.join(resourceDirectory, "org", "esa", "snap", "ui", "tooladapter")
-        createDirectories(layerDirectory, "layerDirectory")
+        
     createDirectory(metaInfDirectory, "metaInfDirectory")
-    return resourceDirectory, metaInfDirectory, toolDirectory, layerDirectory
+    return resourceDirectory, metaInfDirectory, toolDirectory
 
 
 def generateTemplateVM(outputDir, applicationName, param, lowerToolName):
@@ -628,39 +621,6 @@ def createPom(toolDirectory, dicResult, lowerToolName):
 
         f.close()
 
-
-def createLayer(layerDirectory, dicResult):
-    """
-    Create layer.xml file
-    :param layerDirectory:
-    :param dicResult:
-    :return:
-    """
-    sourceLayerFile = os.path.join(os.path.dirname(__file__), "layer.xml")
-    layerXml = os.path.join(layerDirectory, "layer.xml")
-    try:
-        dom = ET.parse(sourceLayerFile)
-    except ExpatError:
-        raise MainXMLError("Error: Error parsing " + xmlDescriptionProcessing +
-                           ". This XML is not readeable.")
-    else:
-        stringValueXpath = '//filesystem/folder[@name="Actions"]/folder[@name="Tools"]/attr[@name="displayName"]'
-        newValue = dicResult["key"]
-
-        root = dom.getroot()
-        r = root.xpath(stringValueXpath)
-        # print r
-        if len(r) == 1:
-            response = r[0]
-            response.set("stringvalue", newValue)
-
-        tree = ET.ElementTree(root)
-        f = open(layerXml, "w")
-        f.write(ET.tostring(dom, pretty_print=True,encoding="UTF-8")) # xml_declaration=True, standalone='No',
-
-        f.close()
-
-
 def createManifest(toolDirectory, dicResult, version):
     """
     Creates MANIFEST.MF
@@ -698,22 +658,28 @@ def run_ToolAdapterGenerator(outputDir, xmlDescriptionProcessing, createAdapter=
 
     dicParameters, stringVM, XMLParamList, hasOutputRaster =manageToolParameters(dicResult)
 
-    resourceDirectory, metaInfDirectory, toolDirectory, layerDirectory = generateStructure(outputDir,
-                                                                                           lowerToolName,
-                                                                                           createAdapter)
+    resourceDirectory, metaInfDirectory, toolDirectory = generateStructure(outputDir,
+                                                                           lowerToolName,
+                                                                           createAdapter)
     vmFile = generateTemplateVM(resourceDirectory, applicationName, stringVM, lowerToolName)
     rootVar = generateDescriptorXml(metaInfDirectory, applicationName, xmlDescriptionProcessing, vmFile, dicResult,
                           XMLParamList, "5.2", hasOutputRaster, envVarTool)
 
     if createAdapter:
         createPom(toolDirectory, dicResult, lowerToolName)
-        createLayer(layerDirectory, dicResult)
         createManifest(metaInfDirectory, dicResult, "3.0.0")
 
 
 
 if __name__ == '__main__':
     outputDirectory = os.path.join(os.path.dirname(__file__), '..')
+    
+    dirlist = [folder for folder in os.listdir(outputDirectory) if os.path.isdir(os.path.join(outputDirectory, folder)) and folder not in ["maintenance", "s2tbx-otb-adapters-kit", ".sonar", "target"]]
+    print dirlist
+    for existingAdapter in dirlist:
+        print os.path.abspath(os.path.join(outputDirectory, existingAdapter))
+        shutil.rmtree( os.path.abspath(os.path.join(outputDirectory, existingAdapter)) )
+    
     directoryContainingProcessingXML = os.path.join(os.path.dirname(__file__), 'xml')
     createAdapter = True
     listXmlFiles = glob.glob(os.path.join(directoryContainingProcessingXML, "*.xml"))

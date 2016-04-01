@@ -547,6 +547,7 @@ def getInfoFromProcessingXML(xmlDescriptionProcessing):
 
     dicXpath = {
             "key":"./key",
+            "longname":"./longname",
             "description": "./description",
             "exec": "./exec",
             "parameters": "./parameter"
@@ -639,11 +640,13 @@ OpenIDE-Module-Name: {appKeySplitted}
 OpenIDE-Module-Display-Category: Sentinel-2 Toolbox
 OpenIDE-Module-Java-Dependencies: Java > 1.8
 OpenIDE-Module-Type: STA
+OpenIDE-Module-Short-Description: {longName}
 OpenIDE-Module: org.esa.s2tbx.{appKeySplitted}
+OpenIDE-Module-Alias: {appKey}
 OpenIDE-Module-Module-Dependencies: org.esa.snap.snap.sta, org.esa.snap.snap.sta.ui
 OpenIDE-Module-Install: org/esa/snap/utils/ModuleInstaller.class
 AutoUpdate-Show-In-Client: false
-""".format(version=version, appKeySplitted=appKeySplitted)
+""".format(version=version, appKeySplitted=appKeySplitted, longName=dicResult['longname'], appKey=dicResult['key'] )
 
     with open(manifestFile, "w") as f:
         f.write(manifest)

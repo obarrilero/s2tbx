@@ -264,7 +264,7 @@ def getXMLRoot(applicationName, info, vmFile, version, envVarTool):
     return root
 
 
-def addClosing(root, hasOutputRaster):
+def addClosing(root, hasOutputRaster, inputParameterNames):
     """
     Add last xml fields for root
     <source>user</source>
@@ -293,10 +293,12 @@ def addClosing(root, hasOutputRaster):
     met.text = str(not hasOutputRaster).lower()
 
     #TBD
+    # For all products, get the name
     met = ET.SubElement(root, "sourceProductDescriptors")
-    submet = ET.SubElement(met, "org.esa.snap.core.gpf.descriptor.DefaultSourceProductDescriptor")
-    subsubmet = ET.SubElement(submet, "name")
-    subsubmet.text = "sourceProduct 1"
+    for inputParameterName in inputParameterNames:
+        submet = ET.SubElement(met, "org.esa.snap.core.gpf.descriptor.DefaultSourceProductDescriptor")
+        subsubmet = ET.SubElement(submet, "name")
+        subsubmet.text = inputParameterName
 
     #TBD for raster is true
     met = ET.SubElement(root, "targetPropertyDescriptors")
@@ -320,7 +322,7 @@ def getParameters(XMLParamList):
 
 
 def generateDescriptorXml(outputDir, applicationName, xmlDescriptionProcessing, vmFile, info, XMLParamList,
-                          version, hasOutputRaster, envVarTool):
+                          version, hasOutputRaster, envVarTool, inputParameterNames):
     """
     Generate the description.xml file which contains the description of parameters
     :param outputDir:
@@ -338,7 +340,7 @@ def generateDescriptorXml(outputDir, applicationName, xmlDescriptionProcessing, 
     root.append(getVariables(info["exec"], envVarTool))
     root.append(getParameters(XMLParamList))
 
-    addClosing(root, hasOutputRaster)
+    addClosing(root, hasOutputRaster, inputParameterNames)
     tree = ET.ElementTree(root)
 
     f = open(descriptorXml, "w")
@@ -381,6 +383,8 @@ def manageToolParameters(dicInfo):
 
     orderParam = []
     hasOutputRaster = False
+    inputParameterIndex = 0
+    inputParameterName = []
     # go throught all parameters, get information to create S2TBX xml
     for param in toolsProcessingParameters:
 
@@ -417,7 +421,11 @@ def manageToolParameters(dicInfo):
                 # WARNING : suppose that there is only one raster input, else use sourceProductFile
                 if typeParam == "ParameterType_InputImage" and dicParameters[key]["type_processing2"] == "ParameterRaster":
                     logger.debug("ParameterType_InputImage & ParameterRaster")
-                    dicParameters[key]["name"] = "sourceProductFile"
+                    #dicParameters[key]["name"] = "sourceProductFile[{}]".format(inputParameterIndex)
+                    dicParameters[key]["name"] = "sourceProductFile[{}]".format(inputParameterIndex)
+                    inputParameterName.append(param.xpath("./name/text()")[0])
+
+                    inputParameterIndex += 1
                     logger.debug("Changed key: {}".format(dicParameters[key]))
 
                 #case of output raster
@@ -480,9 +488,9 @@ def manageToolParameters(dicInfo):
         # print parameterDic["type"]
         logging.debug("Parameter type {}".format(parameterDic["type"]))
 
-        if parameterDic["name"] == "sourceProductFile":
+        if parameterDic["name"].startswith("sourceProductFile"):
             logging.debug("Case of sourceProductFile")
-            paramName = "sourceProductFile"
+            paramName = parameterDic["name"]
         elif parameterDic["name"] == "targetProductFile":
             logging.debug("Case of targetProductFile")
             paramName = "targetProductFile"
@@ -533,7 +541,7 @@ def manageToolParameters(dicInfo):
 
     stringVM = "\n".join(stringVMList)
 
-    return dicParameters, stringVM, XMLParamList, hasOutputRaster
+    return dicParameters, stringVM, XMLParamList, hasOutputRaster, inputParameterName
 
 
 
@@ -593,7 +601,7 @@ def createPom(toolDirectory, dicResult, lowerToolName):
     try:
         dom = ET.parse(sourcePomFile)
     except ExpatError:
-        raise MainXMLError("Error: Error parsing " + xmlDescriptionProcessing +
+        raise MainXMLError("Error: Error parsing " + sourcePomFile +
                            ". This XML is not readeable.")
     else:
         dicXpath = {
@@ -659,14 +667,14 @@ def run_ToolAdapterGenerator(outputDir, xmlDescriptionProcessing, createAdapter=
         lowerToolName = lowerToolName[1:]
     envVarTool = "OTB_BIN" + lowerToolName.upper().replace("-", "_") +"_EXEC"
 
-    dicParameters, stringVM, XMLParamList, hasOutputRaster =manageToolParameters(dicResult)
+    dicParameters, stringVM, XMLParamList, hasOutputRaster, inputParameterNames =manageToolParameters(dicResult)
 
     resourceDirectory, metaInfDirectory, toolDirectory = generateStructure(outputDir,
                                                                            lowerToolName,
                                                                            createAdapter)
     vmFile = generateTemplateVM(resourceDirectory, applicationName, stringVM, lowerToolName)
     rootVar = generateDescriptorXml(metaInfDirectory, applicationName, xmlDescriptionProcessing, vmFile, dicResult,
-                          XMLParamList, "5.2", hasOutputRaster, envVarTool)
+                          XMLParamList, "5.2", hasOutputRaster, envVarTool, inputParameterNames)
 
     if createAdapter:
         createPom(toolDirectory, dicResult, lowerToolName)

@@ -45,6 +45,12 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
+                <configuration combine.self="override">
+                    <licenseFile>${project.basedir}/../../LICENSE.html</licenseFile>
+                    <keystore>${project.basedir}/../../keystore/s2tbx.ks</keystore>
+                    <keystorealias>snap</keystorealias>
+                    <keystorepassword>snap-123</keystorepassword>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -18,8 +18,7 @@
     <modules>
         <module>s2tbx-otb-adapters-kit</module>
 
-        <module>haralick-texture-extraction</module>
-        <module>mean-shift-smoothing</module>
+        <!--module>mean-shift-smoothing</module-->
         <module>multivariate-alteration-detector</module>
         <module>pansharpening-bayes</module>
         <module>pansharpening-lmvm</module>

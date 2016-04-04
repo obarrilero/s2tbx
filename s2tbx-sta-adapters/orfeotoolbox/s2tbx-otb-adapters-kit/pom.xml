@@ -11,9 +11,9 @@
     <artifactId>s2tbx-otb-adapters-kit</artifactId>
     <packaging>nbm</packaging>
 
-    <name>Sentinel-2 Toolbox OTB Adapters Module</name>
+    <name>Sentinel-2 Toolbox OTB Adapters Module (Beta)</name>
     <description>
-        OTB tools integration in the Sentinel-2 Toolbox
+        OTB tools integration in the Sentinel-2 Toolbox (Beta)
     </description>
 
     <build>
@@ -42,16 +42,11 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.esa.s2tbx</groupId>
-            <artifactId>haralick-texture-extraction</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.esa.s2tbx</groupId>
             <artifactId>mean-shift-smoothing</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.esa.s2tbx</groupId>
             <artifactId>multivariate-alteration-detector</artifactId>

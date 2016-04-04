@@ -23,6 +23,7 @@
       <linux>/usr/bin</linux>
       <macosx></macosx>
       <isTransient>false</isTransient>
+      <isShared>true</isShared>
     </osvariable>
     <osvariable>
       <key>OTB_BINSEGMENTATION_MPROFILES_EXEC</key>
@@ -31,20 +32,10 @@
       <linux>otbcli_Segmentation</linux>
       <macosx>otbcli_Segmentation</macosx>
       <isTransient>false</isTransient>
+      <isShared>true</isShared>
     </osvariable>
   </variables>
   <parameters>
-    <parameter>
-      <name>sourceProductFile</name>
-      <alias>sourceProductFile</alias>
-      <dataType>java.io.File</dataType>
-      <description>The input image to segment</description>
-      <valueSet/>
-      <notNull>false</notNull>
-      <notEmpty>false</notEmpty>
-      <parameterType>RegularParameter</parameterType>
-      <toolParameterDescriptors/>
-    </parameter>
     <parameter>
       <name>size_int</name>
       <alias>Profile Size</alias>
@@ -219,7 +210,7 @@
   <isHandlingOutputName>true</isHandlingOutputName>
   <sourceProductDescriptors>
     <org.esa.snap.core.gpf.descriptor.DefaultSourceProductDescriptor>
-      <name>sourceProduct 1</name>
+      <name>Input Image</name>
     </org.esa.snap.core.gpf.descriptor.DefaultSourceProductDescriptor>
   </sourceProductDescriptors>
   <targetPropertyDescriptors/>

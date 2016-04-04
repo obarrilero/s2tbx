@@ -165,7 +165,8 @@ def getVariables(appName, envVarTool):
     submet.text = ""
     submet = ET.SubElement(met, "isTransient")
     submet.text = "false"
-
+    submet = ET.SubElement(met, "isShared")
+    submet.text = "true"
 
     met = ET.SubElement(root, "osvariable")
 
@@ -181,7 +182,8 @@ def getVariables(appName, envVarTool):
     submet.text = appName
     submet = ET.SubElement(met, "isTransient")
     submet.text = "false"
-
+    submet = ET.SubElement(met, "isShared")
+    submet.text = "true"
 
     # met = ET.SubElement(root, "osvariable")
     #
@@ -378,13 +380,16 @@ def manageToolParameters(dicInfo):
                       'ParameterType_Empty': ['java.lang.Boolean', 'bool'], # TBD
                       "ParameterType_InputImage": ['java.io.File', 'str'],
                       "ParameterType_OutputImage": ['java.io.File', 'str'],
-                      "ParameterType_OutputVectorData": ['java.io.File', 'str']
-    }
+                      "ParameterType_OutputVectorData": ['java.io.File', 'str'],
+                      "ParameterType_InputFilename": ['java.io.File', 'str']
+
+                      }
 
     orderParam = []
     hasOutputRaster = False
     inputParameterIndex = 0
-    inputParameterName = []
+    inputParameterNames = []
+
     # go throught all parameters, get information to create S2TBX xml
     for param in toolsProcessingParameters:
 
@@ -423,8 +428,7 @@ def manageToolParameters(dicInfo):
                     logger.debug("ParameterType_InputImage & ParameterRaster")
                     #dicParameters[key]["name"] = "sourceProductFile[{}]".format(inputParameterIndex)
                     dicParameters[key]["name"] = "sourceProductFile[{}]".format(inputParameterIndex)
-                    inputParameterName.append(param.xpath("./name/text()")[0])
-
+                    inputParameterNames.append(param.xpath("./name/text()")[0])
                     inputParameterIndex += 1
                     logger.debug("Changed key: {}".format(dicParameters[key]))
 
@@ -432,11 +436,11 @@ def manageToolParameters(dicInfo):
                 if typeParam == "ParameterType_OutputImage" and dicParameters[key]["type_processing2"] == "OutputRaster":
                     logger.debug("ParameterType_OutputImage & OutputRaster")
                     dicParameters[key]["name"] = "targetProductFile"
-                    logger.debug("Changed key: {}".format(dicParameters[key]))
                     hasOutputRaster = True
 
-                #case of output vector
-                if typeParam == "ParameterType_OutputVectorData" and dicParameters[key]["type_processing2"] == "OutputVector":
+                # case of output vector
+                if typeParam == "ParameterType_OutputVectorData" and dicParameters[key][
+                    "type_processing2"] == "OutputVector":
                     logger.debug("ParameterType_OutputVectorData & OutputVector")
                     dicParameters[key]["default"] = appName.lower() + ".shp"
 
@@ -482,24 +486,50 @@ def manageToolParameters(dicInfo):
 
     stringVMList = []
     XMLParamList = []
+    commandLine = dicInfo["cli_args_template"].split()
+
+    # create the template string
+    for i in range(len(commandLine)):
+        commandLineElement = commandLine[i]
+
+        if commandLineElement.startswith("-"):
+            #we check the parameter is in the dic (optional parameter without default are removed)
+            paramKey = commandLineElement[1:len(commandLineElement)]
+            if paramKey in dicParameters:
+                stringVMList.append(commandLineElement)
+                nextCommandLineElement = commandLine[i+1]
+                #we replace parameters values surrouded by {}, we just append others
+                if nextCommandLineElement.startswith("{") and nextCommandLineElement.endswith("}"):
+                    parameterDic = dicParameters[paramKey]
+
+                    if parameterDic["name"].startswith("sourceProductFile"):
+                        logging.debug("Case of sourceProductFile")
+                        if inputParameterIndex > 1:
+                            paramName = parameterDic["name"]
+                        else:
+                            paramName ="sourceProductFile"
+                    elif parameterDic["name"].startswith("targetProductFile"):
+                        logging.debug("Case of targetProductFile")
+                        paramName = "targetProductFile"
+
+                    else:
+                        # .split(".")[-1] to avoir paramName like mode.vector.out that does not work
+                        paramName = parameterDic.get("key", "unknown_key").split(".")[-1] + "_" + \
+                                    parameterDic.get("type", "unknown_type")[1]
+
+                    stringVMList.append("$" + paramName)
+                else:
+                    stringVMList.append(nextCommandLineElement)
+
+    stringVM = "\n".join(stringVMList)
+
     for parameterDesc in orderParam:  # , parameterDic in dicParameters.iteritems():
+
         parameterDic = dicParameters[parameterDesc]
 
         # print parameterDic["type"]
         logging.debug("Parameter type {}".format(parameterDic["type"]))
 
-        if parameterDic["name"].startswith("sourceProductFile"):
-            logging.debug("Case of sourceProductFile")
-            paramName = parameterDic["name"]
-        elif parameterDic["name"] == "targetProductFile":
-            logging.debug("Case of targetProductFile")
-            paramName = "targetProductFile"
-        else:
-            #.split(".")[-1] to avoir paramName like mode.vector.out that does not work
-            paramName = parameterDic.get("key", "unknown_key").split(".")[-1] + "_" + parameterDic.get("type", "unknown_type")[1]
-        #creating string for vm file
-        stringVMList.append("-" + parameterDic.get("key", "unknown_key"))
-        stringVMList.append("$" +paramName)
 
         #creating node
         # <parameter>
@@ -514,37 +544,41 @@ def manageToolParameters(dicInfo):
         #   <parameterType>RegularParameter</parameterType>
         #   <toolParameterDescriptors/>
         # </parameter>
-        root = ET.Element("parameter")
+        if not parameterDic["name"].startswith("sourceProductFile") :
 
-        met = ET.SubElement(root, "name")
-        met.text = paramName
-        met = ET.SubElement(root, "alias")
-        met.text = parameterDic.get("name", "unknown_description")
-        met = ET.SubElement(root, "dataType")
-        met.text = parameterDic.get("type", "unknown_type")[0]
-        if "default" in parameterDic:
-            met = ET.SubElement(root, "defaultValue")
-            met.text = parameterDic["default"]
-        met = ET.SubElement(root, "description")
-        met.text = parameterDic.get("description", "unknown_description")
-        met = ET.SubElement(root, "valueSet")
-        met = ET.SubElement(root, "notNull")
-        met.text = "false"
-        met = ET.SubElement(root, "notEmpty")
-        met.text = "false"
-        #TBD
-        met = ET.SubElement(root, "parameterType")
-        met.text = "RegularParameter"
-        met = ET.SubElement(root, "toolParameterDescriptors")
-        XMLParamList.append(root)
+            if parameterDic["name"].startswith("targetProductFile") :
+                paramName = "targetProductFile"
+            else :
+                paramName = parameterDic.get("key", "unknown_key").split(".")[-1] + "_" + \
+                            parameterDic.get("type", "unknown_type")[1]
+
+            root = ET.Element("parameter")
+
+            met = ET.SubElement(root, "name")
+            met.text = paramName
+            met = ET.SubElement(root, "alias")
+            met.text = parameterDic.get("name", "unknown_description")
+            met = ET.SubElement(root, "dataType")
+            met.text = parameterDic.get("type", "unknown_type")[0]
+            if "default" in parameterDic:
+                met = ET.SubElement(root, "defaultValue")
+                met.text = parameterDic["default"]
+            met = ET.SubElement(root, "description")
+            met.text = parameterDic.get("description", "unknown_description")
+            met = ET.SubElement(root, "valueSet")
+            met = ET.SubElement(root, "notNull")
+            met.text = "false"
+            met = ET.SubElement(root, "notEmpty")
+            met.text = "false"
+            #TBD
+            met = ET.SubElement(root, "parameterType")
+            met.text = "RegularParameter"
+            met = ET.SubElement(root, "toolParameterDescriptors")
+            XMLParamList.append(root)
 
 
-    stringVM = "\n".join(stringVMList)
 
-    return dicParameters, stringVM, XMLParamList, hasOutputRaster, inputParameterName
-
-
-
+    return dicParameters, stringVM, XMLParamList, hasOutputRaster, inputParameterNames
 
 
 def getInfoFromProcessingXML(xmlDescriptionProcessing):
@@ -558,7 +592,9 @@ def getInfoFromProcessingXML(xmlDescriptionProcessing):
             "longname":"./longname",
             "description": "./description",
             "exec": "./exec",
-            "parameters": "./parameter"
+            "parameters": "./parameter",
+            "cli_args_template": "./cli_args_template"
+
     }
     dicResult = {}
 

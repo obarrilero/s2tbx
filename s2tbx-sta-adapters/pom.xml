@@ -45,7 +45,7 @@
                 <configuration>
                     <moduleType>normal</moduleType>
                     <licenseName>GPL 3</licenseName>
-                    <licenseFile>${project.basedir}/../LICENSE.html</licenseFile>
+                    <licenseFile>${project.basedir}/../../../LICENSE.html</licenseFile>
                     <cluster>${brandingToken}</cluster>
                     <brandingToken>${brandingToken}</brandingToken>
                     <useOSGiDependencies>false</useOSGiDependencies>

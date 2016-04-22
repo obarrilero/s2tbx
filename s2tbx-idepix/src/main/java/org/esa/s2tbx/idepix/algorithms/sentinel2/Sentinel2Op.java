@@ -37,7 +37,7 @@ public class Sentinel2Op extends Operator {
             description = " Write TOA Reflectances to the target product")
     private boolean copyToaReflectances;
 
-    @Parameter(defaultValue = "false",
+    @Parameter(defaultValue = "true",
             label = " Write Feature Values to the target product",
             description = " Write all Feature Values to the target product")
     private boolean copyFeatureValues;

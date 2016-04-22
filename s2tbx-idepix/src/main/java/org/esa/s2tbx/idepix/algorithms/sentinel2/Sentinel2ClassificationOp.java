@@ -45,7 +45,7 @@ public class Sentinel2ClassificationOp extends Operator {
             description = " Write TOA Reflectances to the target product")
     private boolean copyToaReflectances;
 
-    @Parameter(defaultValue = "false",
+    @Parameter(defaultValue = "true",
             label = " Write Feature Values to the target product",
             description = " Write all Feature Values to the target product")
     private boolean copyFeatureValues;
@@ -165,48 +165,48 @@ public class Sentinel2ClassificationOp extends Operator {
                     final double[] nnOutput = s2MsiAlgorithm.getNnOutput();
 
                     // 'pure Schiller'
-                    if (applyNNPure) {
-                        if (!cloudFlagTargetTile.getSampleBit(x, y, IdepixConstants.F_INVALID)) {
-                            cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_AMBIGUOUS, false);
-                            cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_SURE, false);
-                            cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD, false);
-                            cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLEAR_SNOW, false);
-                            if (nnOutput[0] > nnCloudAmbiguousLowerBoundaryValue &&
-                                    nnOutput[0] <= nnCloudAmbiguousSureSeparationValue) {
-                                // this would be as 'CLOUD_AMBIGUOUS'...
-                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_AMBIGUOUS, true);
-                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD, true);
-                            }
-                            if (nnOutput[0] > nnCloudAmbiguousSureSeparationValue &&
-                                    nnOutput[0] <= nnCloudSureSnowSeparationValue) {
-                                // this would be as 'CLOUD_SURE'...
-                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_SURE, true);
-                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD, true);
-                            }
-                            if (nnOutput[0] > nnCloudSureSnowSeparationValue) {
-                                // this would be as 'SNOW/ICE'...
-                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLEAR_SNOW, true);
-                            }
-                        }
-                    } else {
-                        // 'refinement with Schiller', as with old net. // todo: what do we want??
-                        if (!cloudFlagTargetTile.getSampleBit(x, y, IdepixConstants.F_CLOUD) &&
-                                !cloudFlagTargetTile.getSampleBit(x, y, IdepixConstants.F_CLOUD_SURE)) {
-                            if (nnOutput[0] > nnCloudAmbiguousLowerBoundaryValue &&
-                                    nnOutput[0] <= nnCloudAmbiguousSureSeparationValue) {
-                                // this would be as 'CLOUD_AMBIGUOUS' in CC and makes many coastlines as cloud...
-                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_AMBIGUOUS, true);
-                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD, true);
-                            }
-                            if (nnOutput[0] > nnCloudAmbiguousSureSeparationValue &&
-                                    nnOutput[0] <= nnCloudSureSnowSeparationValue) {
-                                //   'CLOUD_SURE' as in CC (20140424, OD)
-                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_SURE, true);
-                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_AMBIGUOUS, false);
-                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD, true);
-                            }
-                        }
-                    }
+//                    if (applyNNPure) {
+//                        if (!cloudFlagTargetTile.getSampleBit(x, y, IdepixConstants.F_INVALID)) {
+//                            cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_AMBIGUOUS, false);
+//                            cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_SURE, false);
+//                            cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD, false);
+//                            cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLEAR_SNOW, false);
+//                            if (nnOutput[0] > nnCloudAmbiguousLowerBoundaryValue &&
+//                                    nnOutput[0] <= nnCloudAmbiguousSureSeparationValue) {
+//                                // this would be as 'CLOUD_AMBIGUOUS'...
+//                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_AMBIGUOUS, true);
+//                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD, true);
+//                            }
+//                            if (nnOutput[0] > nnCloudAmbiguousSureSeparationValue &&
+//                                    nnOutput[0] <= nnCloudSureSnowSeparationValue) {
+//                                // this would be as 'CLOUD_SURE'...
+//                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_SURE, true);
+//                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD, true);
+//                            }
+//                            if (nnOutput[0] > nnCloudSureSnowSeparationValue) {
+//                                // this would be as 'SNOW/ICE'...
+//                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLEAR_SNOW, true);
+//                            }
+//                        }
+//                    } else {
+//                        // 'refinement with Schiller', as with old net. // todo: what do we want??
+//                        if (!cloudFlagTargetTile.getSampleBit(x, y, IdepixConstants.F_CLOUD) &&
+//                                !cloudFlagTargetTile.getSampleBit(x, y, IdepixConstants.F_CLOUD_SURE)) {
+//                            if (nnOutput[0] > nnCloudAmbiguousLowerBoundaryValue &&
+//                                    nnOutput[0] <= nnCloudAmbiguousSureSeparationValue) {
+//                                // this would be as 'CLOUD_AMBIGUOUS' in CC and makes many coastlines as cloud...
+//                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_AMBIGUOUS, true);
+//                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD, true);
+//                            }
+//                            if (nnOutput[0] > nnCloudAmbiguousSureSeparationValue &&
+//                                    nnOutput[0] <= nnCloudSureSnowSeparationValue) {
+//                                //   'CLOUD_SURE' as in CC (20140424, OD)
+//                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_SURE, true);
+//                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD_AMBIGUOUS, false);
+//                                cloudFlagTargetTile.setSample(x, y, IdepixConstants.F_CLOUD, true);
+//                            }
+//                        }
+//                    }
                     nnTargetTile.setSample(x, y, nnOutput[0]);
 
                     // for given instrument, compute more pixel properties and write to distinct band
@@ -331,8 +331,8 @@ public class Sentinel2ClassificationOp extends Operator {
             brightWhiteBand = targetProduct.addBand("bright_white_value", ProductData.TYPE_FLOAT32);
             IdepixUtils.setNewBandProperties(brightWhiteBand, "Brightwhiteness", "dl", IdepixConstants.NO_DATA_VALUE,
                                              true);
-            temperatureBand = targetProduct.addBand("temperature_value", ProductData.TYPE_FLOAT32);
-            IdepixUtils.setNewBandProperties(temperatureBand, "Temperature", "K", IdepixConstants.NO_DATA_VALUE, true);
+//            temperatureBand = targetProduct.addBand("temperature_value", ProductData.TYPE_FLOAT32);
+//            IdepixUtils.setNewBandProperties(temperatureBand, "Temperature", "K", IdepixConstants.NO_DATA_VALUE, true);
             spectralFlatnessBand = targetProduct.addBand("spectral_flatness_value", ProductData.TYPE_FLOAT32);
             IdepixUtils.setNewBandProperties(spectralFlatnessBand, "Spectral Flatness", "dl",
                                              IdepixConstants.NO_DATA_VALUE, true);
@@ -340,8 +340,8 @@ public class Sentinel2ClassificationOp extends Operator {
             IdepixUtils.setNewBandProperties(ndviBand, "NDVI", "dl", IdepixConstants.NO_DATA_VALUE, true);
             ndsiBand = targetProduct.addBand("ndsi_value", ProductData.TYPE_FLOAT32);
             IdepixUtils.setNewBandProperties(ndsiBand, "NDSI", "dl", IdepixConstants.NO_DATA_VALUE, true);
-            glintRiskBand = targetProduct.addBand("glint_risk_value", ProductData.TYPE_FLOAT32);
-            IdepixUtils.setNewBandProperties(glintRiskBand, "GLINT_RISK", "dl", IdepixConstants.NO_DATA_VALUE, true);
+//            glintRiskBand = targetProduct.addBand("glint_risk_value", ProductData.TYPE_FLOAT32);
+//            IdepixUtils.setNewBandProperties(glintRiskBand, "GLINT_RISK", "dl", IdepixConstants.NO_DATA_VALUE, true);
             radioLandBand = targetProduct.addBand("radiometric_land_value", ProductData.TYPE_FLOAT32);
             IdepixUtils.setNewBandProperties(radioLandBand, "Radiometric Land Value", "", IdepixConstants.NO_DATA_VALUE,
                                              true);

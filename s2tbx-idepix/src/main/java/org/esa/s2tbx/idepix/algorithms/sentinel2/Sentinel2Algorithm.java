@@ -20,12 +20,13 @@ public class Sentinel2Algorithm {
 
     static final float BRIGHTWHITE_THRESH = 1.5f;
     static final float NDSI_THRESH = 0.68f;
-    static final float CLOUD_THRESH = 1.65f;
-    static final float BRIGHT_THRESH = 0.25f;
+//    static final float CLOUD_THRESH = 1.65f;
+    static final float CLOUD_THRESH = 2.0f;  // OD, 20160422
+//    static final float BRIGHT_THRESH = 0.25f;
+    static final float BRIGHT_THRESH = 0.8f;  // OD, 20160422
     static final float BRIGHT_FOR_WHITE_THRESH = 0.8f;
     static final float WHITE_THRESH = 0.9f;
     static final float NDVI_THRESH = 0.5f;
-    static final float PRESSURE_THRESH = 0.9f;
 
     private float[] refl;
     private double brr442Thresh;
@@ -144,11 +145,7 @@ public class Sentinel2Algorithm {
     }
 
     public float ndsiValue() {
-        double value = (refl[2] - refl[10]) / (refl[2] + refl[10]);
-        value = 20.0 * (value + 0.02);
-        value = Math.min(value, 1.0);
-        value = Math.max(value, 0.0);
-        return (float) value;
+        return (refl[2] - refl[10]) / (refl[2] + refl[10]);
     }
 
     public float ndviValue() {
@@ -164,11 +161,11 @@ public class Sentinel2Algorithm {
     }
 
     public float aPrioriLandValue() {
-        return UNCERTAINTY_VALUE;
+        return radiometricLandValue();
     }
 
     public float aPrioriWaterValue() {
-        return UNCERTAINTY_VALUE;
+        return radiometricWaterValue();
     }
 
 

@@ -27,6 +27,8 @@
 
     <modules>
         <module>s2tbx-s2msi-reader</module>
+        <module>s2tbx-idepix</module>
+        <module>s2tbx-idepix-ui</module>
         <module>s2tbx-jp2-reader</module>
         <module>lib-openjpeg</module>
         <module>s2tbx-commons</module>
@@ -43,6 +45,7 @@
     <properties>
         <snap.version>4.0.0-SNAPSHOT</snap.version>
         <s2tbx.version>4.0.0-SNAPSHOT</s2tbx.version>
+        <s2tbx.nbmSpecVersion>4.0.0</s2tbx.nbmSpecVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <user.language>en</user.language>
         <netbeans.version>RELEASE802</netbeans.version>

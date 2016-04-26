@@ -14,7 +14,7 @@
   <workingDir>/tmp</workingDir>
   <templateFileLocation>pansharpening-lmvm-template.vm</templateFileLocation>
   <progressPattern>.*: (\d{1,3})%(?:.+)</progressPattern>
-  <errorPattern>itk::ERROR(.+)</errorPattern>
+  <errorPattern>(?:ERROR:|itk::ERROR)(.+)</errorPattern>
   <variables>
     <osvariable>
       <key>OTB_BIN_DIR</key>

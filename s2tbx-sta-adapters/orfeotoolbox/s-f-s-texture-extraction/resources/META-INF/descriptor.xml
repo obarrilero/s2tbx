@@ -14,7 +14,7 @@
   <workingDir>/tmp</workingDir>
   <templateFileLocation>s-f-s-texture-extraction-template.vm</templateFileLocation>
   <progressPattern>.*: (\d{1,3})%(?:.+)</progressPattern>
-  <errorPattern>itk::ERROR(.+)</errorPattern>
+  <errorPattern>(?:ERROR:|itk::ERROR)(.+)</errorPattern>
   <variables>
     <osvariable>
       <key>OTB_BIN_DIR</key>

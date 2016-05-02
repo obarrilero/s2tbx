@@ -83,13 +83,13 @@
 
         <dependency>
             <groupId>org.esa.s2tbx</groupId>
-            <artifactId>s2tbx-idepix</artifactId>
+            <artifactId>s2tbx-s2msi-idepix</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.esa.s2tbx</groupId>
-            <artifactId>s2tbx-idepix-ui</artifactId>
+            <artifactId>s2tbx-s2msi-idepix-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
 

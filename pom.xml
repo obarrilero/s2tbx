@@ -27,8 +27,8 @@
 
     <modules>
         <module>s2tbx-s2msi-reader</module>
-        <module>s2tbx-idepix</module>
-        <module>s2tbx-idepix-ui</module>
+        <module>s2tbx-s2msi-idepix</module>
+        <module>s2tbx-s2msi-idepix-ui</module>
         <module>s2tbx-jp2-reader</module>
         <module>lib-openjpeg</module>
         <module>s2tbx-commons</module>

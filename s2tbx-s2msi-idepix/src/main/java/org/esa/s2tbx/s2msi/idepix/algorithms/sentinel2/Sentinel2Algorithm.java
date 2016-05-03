@@ -16,11 +16,11 @@ public class Sentinel2Algorithm {
     static final float WATER_THRESH = 0.9f;
 
     static final float BRIGHTWHITE_THRESH = 1.5f;
-    static final float NDSI_THRESH = 0.68f;
-//    static final float CLOUD_THRESH = 1.65f;
-    static final float CLOUD_THRESH = 2.0f;  // OD, 20160422
-//    static final float BRIGHT_THRESH = 0.25f;
-    static final float BRIGHT_THRESH = 0.8f;  // OD, 20160422
+    static final float NDSI_THRESH = 0.6f;
+    static final float CLOUD_THRESH = 1.65f;   // changed back, 20160503 todo: further check how this works
+//    static final float CLOUD_THRESH = 2.0f;  // OD, 20160422
+    static final float BRIGHT_THRESH = 0.25f;  // changed back, 20160503 todo: further check how this works
+//    static final float BRIGHT_THRESH = 0.8f;  // OD, 20160422
     static final float BRIGHT_FOR_WHITE_THRESH = 0.8f;
     static final float WHITE_THRESH = 0.9f;
     static final float NDVI_THRESH = 0.5f;
@@ -84,7 +84,8 @@ public class Sentinel2Algorithm {
     }
 
     public boolean isWater() {
-        return !isInvalid() && !isLand() && isWater;
+//        return !isInvalid() && !isLand() && isWater;
+        return !isInvalid() && aPrioriWaterValue() > WATER_THRESH;  // todo: check again when we use SRTM water mask
     }
 
     public boolean isBright() {
@@ -142,11 +143,11 @@ public class Sentinel2Algorithm {
     }
 
     public float ndsiValue() {
-        return (refl[2] - refl[10]) / (refl[2] + refl[10]);
+        return (refl[2] - refl[11]) / (refl[2] + refl[11]);
     }
 
     public float ndviValue() {
-        double value = (refl[5] - refl[3]) / (refl[5] + refl[3]);
+        double value = (refl[8] - refl[3]) / (refl[8] + refl[3]);
         value = 0.5 * (value + 1);
         value = Math.min(value, 1.0);
         value = Math.max(value, 0.0);

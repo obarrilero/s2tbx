@@ -61,6 +61,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.awt.image.DataBufferFloat;
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -128,7 +129,7 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
 
         Objects.requireNonNull(metadataFile);
 
-        boolean isAGranule = S2OrthoGranuleMetadataFilename.isGranuleFilename(metadataFile.getName());
+        boolean isAGranule = /*S2OrthoGranuleMetadataFilename.isGranuleFilename(metadataFile.getName())*/S2ProductNamingManager.checkStructureFromGranuleXml(metadataFile.toPath());
         boolean foundProductMetadata = true;
 
         if (isAGranule) {
@@ -164,14 +165,18 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
 
             filterTileId = tileIdFilter.getName();
 
-            File[] files = up2levels.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    if (S2ProductFilename.isProductFilename(f.getName()) && S2ProductFilename.isMetadataFilename(f.getName())) {
+            Path p = S2ProductNamingManager.getXmlFromDir(up2levels.toPath());
+            File f = null;
+            if(p != null) {
+                f = p.toFile();
+            }
+            if (f != null) {
+                //for (File f : files) {
+                    //TODO algo mas?????
+                    if (/*S2ProductFilename.isProductFilename*/S2ProductNamingManager.checkStructureFromProductXml(f.toPath()) /*&& S2ProductFilename.isMetadataFilename(f.getName())*/) {
                         rootMetaDataFile = f;
-                        break;
                     }
-                }
+               // }
             }
             if (rootMetaDataFile == null) {
                 foundProductMetadata = false;

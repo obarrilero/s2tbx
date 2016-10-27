@@ -18,6 +18,7 @@
 package org.esa.s2tbx.dataio.s2.ortho;
 
 import org.esa.s2tbx.dataio.s2.S2Config;
+import org.esa.s2tbx.dataio.s2.S2ProductNamingManager;
 import org.esa.s2tbx.dataio.s2.S2ProductReaderPlugIn;
 import org.esa.s2tbx.dataio.s2.Sentinel2ProductReader;
 import org.esa.s2tbx.dataio.s2.l2a.L2aUtils;
@@ -74,7 +75,7 @@ public abstract class S2OrthoProductReaderPlugIn extends S2ProductReaderPlugIn {
             return DecodeQualification.UNABLE;
         }
 
-        crsCache.ensureIsCached(file.getAbsolutePath());
+        crsCache.ensureIsCached(file.toPath()/*getAbsolutePath()*/);
 
         level = crsCache.getProductLevel(file.getAbsolutePath());
         S2Config.Sentinel2InputType  inputType = crsCache.getInputType(file.getAbsolutePath());
@@ -125,28 +126,21 @@ public abstract class S2OrthoProductReaderPlugIn extends S2ProductReaderPlugIn {
         }
         File file = (File) input;
         String fileName = file.getName();
-        Matcher matcher = PATTERN.matcher(fileName);
 
-        // Checking for file regex first, it is quicker than File.isFile()
-        if (!matcher.matches()) {
-            return null;
-        }
-
-        if (!file.isFile()) {
-            File xmlFile = getInputXmlFileFromDirectory(file);
-            if (xmlFile == null) {
-                return null;
-            }
-            fileName = xmlFile.getName();
-            file = xmlFile;
-            matcher.reset();
-            matcher = PATTERN.matcher(fileName);
-            if (!matcher.matches()) {
-                return null;
+        if(file.isDirectory()) {
+            Path xmlPath = S2ProductNamingManager.getXmlFromDir(file.toPath());
+            if(xmlPath != null) {
+                file = xmlPath.toFile();
             }
         }
 
-        return file;
+        //o  granule...
+        if(file.isFile() && fileName.endsWith(".xml") && (S2ProductNamingManager.checkStructureFromProductXml(file.toPath()) || S2ProductNamingManager.checkStructureFromGranuleXml(file.toPath()))) {
+            return file;
+        }
+
+
+        return null;
     }
 
 

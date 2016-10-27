@@ -77,7 +77,9 @@ public class L1cPSD13Constants {
 
     public static final String PATH_PRODUCT_METADATA_METADATA_LEVEL = "/Level-1C_User_Product/General_Info/Product_Info/Query_Options/METADATA_LEVEL";
     public static final String PATH_PRODUCT_METADATA_GRANULE_LIST = "/Level-1C_User_Product/General_Info/Product_Info/Product_Organisation/Granule_List/Granules/granuleIdentifier";
+    public static final String PATH_PRODUCT_METADATA_GRANULE_LIST_ALT = "/Level-1C_User_Product/General_Info/Product_Info/Product_Organisation/Granule_List/Granule/granuleIdentifier";
     public static final String PATH_PRODUCT_METADATA_DATASTRIP_LIST = "/Level-1C_User_Product/General_Info/Product_Info/Product_Organisation/Granule_List/Granules/datastripIdentifier";
+    public static final String PATH_PRODUCT_METADATA_DATASTRIP_LIST_ALT = "/Level-1C_User_Product/General_Info/Product_Info/Product_Organisation/Granule_List/Granule/datastripIdentifier";
     public static final String PATH_PRODUCT_METADATA_IMAGE_ID = "/Level-1C_User_Product/General_Info/Product_Info/Product_Organisation/Granule_List/Granules/IMAGE_ID";
     public static final String PATH_PRODUCT_METADATA_QUANTIFICATION_VALUE = "/Level-1C_User_Product/General_Info/Product_Image_Characteristics/QUANTIFICATION_VALUE";
 

@@ -78,7 +78,7 @@ public class L1cProductMetadataPSD13 extends GenericXmlMetadata implements IL1cP
     }
 
     @Override
-    public S2Metadata.ProductCharacteristics getProductOrganization() {
+    public S2Metadata.ProductCharacteristics getProductOrganization(Path xmlPath) {
 
         S2Metadata.ProductCharacteristics characteristics = new S2Metadata.ProductCharacteristics();
 
@@ -105,7 +105,10 @@ public class L1cProductMetadataPSD13 extends GenericXmlMetadata implements IL1cP
     public Collection<String> getTiles() {
         String[] granuleList = getAttributeValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_GRANULE_LIST);
         if(granuleList == null) {
-            return null;
+            granuleList = getAttributeValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_GRANULE_LIST_ALT);
+            if(granuleList == null) {
+                return null;
+            }
         }
         return new ArrayList<>(Arrays.asList(granuleList));
     }
@@ -114,7 +117,10 @@ public class L1cProductMetadataPSD13 extends GenericXmlMetadata implements IL1cP
     public S2DatastripFilename getDatastrip() {
         String[] datastripList = getAttributeValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_DATASTRIP_LIST);
         if(datastripList == null) {
-            return null;
+            datastripList = getAttributeValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_DATASTRIP_LIST_ALT);
+            if(datastripList == null) {
+                return null;
+            }
         }
 
         S2DatastripDirFilename dirDatastrip = S2DatastripDirFilename.create(datastripList[0], null);
@@ -135,9 +141,19 @@ public class L1cProductMetadataPSD13 extends GenericXmlMetadata implements IL1cP
     public S2DatastripDirFilename getDatastripDir() {
         String[] granuleList = getAttributeValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_GRANULE_LIST);
         String[] datastripList = getAttributeValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_DATASTRIP_LIST);
-        if(granuleList == null || datastripList == null) {
-            return null;
+        if(datastripList == null) {
+            datastripList = getAttributeValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_DATASTRIP_LIST_ALT);
+            if(datastripList == null) {
+                return null;
+            }
         }
+        if(granuleList == null) {
+            granuleList = getAttributeValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_GRANULE_LIST_ALT);
+            if(granuleList == null) {
+                return null;
+            }
+        }
+
         S2OrthoGranuleDirFilename grafile = S2OrthoGranuleDirFilename.create(granuleList[0]);
 
         S2DatastripDirFilename datastripDirFilename = null;

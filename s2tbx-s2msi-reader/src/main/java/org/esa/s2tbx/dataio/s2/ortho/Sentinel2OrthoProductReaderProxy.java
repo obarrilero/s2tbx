@@ -61,7 +61,7 @@ public class Sentinel2OrthoProductReaderProxy implements ProductReader {
                 throw new IOException("Invalid input");
             }
 
-            crsCache.ensureIsCached(file.getAbsolutePath());
+            crsCache.ensureIsCached(file.toPath()/*getAbsolutePath()*/);
             S2Config.Sentinel2ProductLevel level = crsCache.getProductLevel(file.getAbsolutePath());
 
             if (level == S2Config.Sentinel2ProductLevel.L2A) {

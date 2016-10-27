@@ -77,7 +77,7 @@ public class L1cGranuleMetadataPSD13 extends GenericXmlMetadata implements IL1cG
     }
 
     @Override
-    public S2Metadata.ProductCharacteristics getTileProductOrganization() {
+    public S2Metadata.ProductCharacteristics getTileProductOrganization(Path xmlPath) {
         S2Metadata.ProductCharacteristics characteristics = new S2Metadata.ProductCharacteristics();
         characteristics.setSpacecraft("Sentinel-2");
         characteristics.setProcessingLevel("Level-1C");

@@ -20,6 +20,7 @@ package org.esa.s2tbx.dataio.s2.l1c;
 
 import org.esa.s2tbx.dataio.s2.S2Config;
 import org.esa.s2tbx.dataio.s2.S2Metadata;
+import org.esa.s2tbx.dataio.s2.S2ProductNamingManager;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
 import org.esa.s2tbx.dataio.s2.filepatterns.S2DatastripDirFilename;
 import org.esa.s2tbx.dataio.s2.filepatterns.S2DatastripFilename;
@@ -73,7 +74,7 @@ public class L1cMetadata extends S2Metadata {
 
     private void initProduct(Path path, String granuleName, String epsg) throws IOException, ParserConfigurationException, SAXException {
         IL1cProductMetadata metadataProduct = L1cMetadataFactory.createL1cProductMetadata(path);
-        setProductCharacteristics(metadataProduct.getProductOrganization());
+        setProductCharacteristics(metadataProduct.getProductOrganization(path));
 
         Collection<String> tileNames;
 
@@ -83,19 +84,41 @@ public class L1cMetadata extends S2Metadata {
             tileNames = Collections.singletonList(granuleName);
         }
 
-        S2DatastripFilename stripName = metadataProduct.getDatastrip();
-        S2DatastripDirFilename dirStripName = metadataProduct.getDatastripDir();
-        Path datastripPath = path.resolveSibling("DATASTRIP").resolve(dirStripName.name).resolve(stripName.name);
-        IL1cDatastripMetadata metadataDatastrip = L1cMetadataFactory.createL1cDatastripMetadata(datastripPath);
-
+        //add product metadata
         getMetadataElements().add(metadataProduct.getMetadataElement());
-        getMetadataElements().add(metadataDatastrip.getMetadataElement());
 
+        //add datastrip metadatas
+        for(Path datastripFolder : S2ProductNamingManager.getDatastripsFromProductXml(path)) {
+            Path datastripPath = S2ProductNamingManager.getXmlFromDir(datastripFolder);
+            if(datastripPath != null) {
+                IL1cDatastripMetadata metadataDatastrip = L1cMetadataFactory.createL1cDatastripMetadata(datastripPath);
+                getMetadataElements().add(metadataDatastrip.getMetadataElement());
+            }
+        }
+
+
+        ArrayList<Path> granulePaths = S2ProductNamingManager.getTilesFromProductXml(path);
         ArrayList<Path> granuleMetadataPathList = new ArrayList<>();
         for (String tileName : tileNames) {
-            S2OrthoGranuleDirFilename aGranuleDir = S2OrthoGranuleDirFilename.create(tileName);
+            //S2OrthoGranuleDirFilename aGranuleDir = S2OrthoGranuleDirFilename.create(tileName);
+            S2ProductNamingManager.getTileIdFromString(tileName);
+            String tileId = S2ProductNamingManager.getTileIdFromString(tileName);
+            if(tileId == null) {
+                continue;
+            }
 
-            if (aGranuleDir != null) {
+            for(Path granulePath : granulePaths) {
+                String tileIdAux = S2ProductNamingManager.getTileIdFromString(granulePath.getFileName().toString());
+                if(tileId.equals(tileIdAux)) {
+                    Path nestedGranuleMetadata = S2ProductNamingManager.getXmlFromDir(granulePath);
+                    if(nestedGranuleMetadata != null) {
+                        granuleMetadataPathList.add(nestedGranuleMetadata);
+                        //TODO notificar algo si no lo encuentra
+                    }
+                }
+            }
+
+            /*if (aGranuleDir != null) {
                 String theName = aGranuleDir.getMetadataFilename().name;
 
                 Path nestedGranuleMetadata = path.resolveSibling("GRANULE").resolve(tileName).resolve(theName);
@@ -105,7 +128,7 @@ public class L1cMetadata extends S2Metadata {
                     String errorMessage = "Corrupted product: the file for the granule " + tileName + " is missing";
                     logger.log(Level.WARNING, errorMessage);
                 }
-            }
+            }*/
         }
 
         //Init Tiles
@@ -120,7 +143,7 @@ public class L1cMetadata extends S2Metadata {
         IL1cGranuleMetadata granuleMetadata = L1cMetadataFactory.createL1cGranuleMetadata(path);
 
         if(getProductCharacteristics() == null) {
-            setProductCharacteristics(granuleMetadata.getTileProductOrganization());
+            setProductCharacteristics(granuleMetadata.getTileProductOrganization(path));
         }
 
         Map<S2SpatialResolution, TileGeometry> geoms = granuleMetadata.getTileGeometries();

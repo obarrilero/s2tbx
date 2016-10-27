@@ -140,7 +140,7 @@ public abstract class Sentinel2ProductReader extends AbstractProductReader {
         }
 
         if (file.isDirectory() && (getReaderPlugIn() instanceof S2ProductReaderPlugIn)) {
-            inputFile = ((S2ProductReaderPlugIn) getReaderPlugIn()).getInputXmlFileFromDirectory(file);
+            inputFile = /*((S2ProductReaderPlugIn) getReaderPlugIn()).getInputXmlFileFromDirectory(file)*/S2ProductNamingManager.getXmlFromDir(file.toPath()).toFile();
             setInput(inputFile);
         } else {
             inputFile = file;
@@ -150,7 +150,7 @@ public abstract class Sentinel2ProductReader extends AbstractProductReader {
             throw new FileNotFoundException(inputFile.getPath());
         }
 
-        if (S2ProductFilename.isMetadataFilename(inputFile.getName())) {
+        if (/*S2ProductFilename.isMetadataFilename(inputFile.getName())*/S2ProductNamingManager.checkStructureFromProductXml(inputFile.toPath()) || S2ProductNamingManager.checkStructureFromGranuleXml(inputFile.toPath())) {
             product = getMosaicProduct(inputFile);
 
             addQuicklook(product, getQuicklookFile(inputFile));

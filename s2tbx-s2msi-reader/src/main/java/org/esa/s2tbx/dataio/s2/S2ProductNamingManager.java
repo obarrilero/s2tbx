@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  */
 public class S2ProductNamingManager {
 
-    public static String[] EXCLUDED_XML = {"INSPIRE"};
+    public static String[] EXCLUDED_XML = {"INSPIRE","L2A_Manifest", "manifest"};
     public static String TILE_ID_REGEX = "(.*)(T[0-9]{2}[A-Z]{3})(.*)";
 
     public static boolean checkStructureFromProductXml(Path xmlPath) {
@@ -109,6 +109,7 @@ public class S2ProductNamingManager {
                 availableXmlCount++;
             }
         }
+        //TODO hacer algo para que
         if(availableXmlCount != 1) {
             return null;
         }
@@ -200,7 +201,7 @@ public class S2ProductNamingManager {
         if(string.contains("L2A")) {
             return S2Config.Sentinel2ProductLevel.L2A;
         }
-        if(string.contains("L3")) {//comprobar
+        if(string.contains("L03")) {//comprobar
             return S2Config.Sentinel2ProductLevel.L3;
         }
         if(string.contains("L1B")) {
@@ -245,11 +246,12 @@ public class S2ProductNamingManager {
         return epsgCode;
     }
 
-    public static String getImageTemplate (String string) {
+    public static String getImageTemplate (String string, String bandFileId) {
         //change the tileId by {{TILENUMBER}} and the band by {{BANDID}}
-        string.replaceAll("(T[0-9]{2}[A-Z]{3})","{{TILENUMBER}}");
-        string.replaceAll("(B[A-Z|0-9]{2})","{{BANDID}}");
-        return string;
+        String template  = string.replaceAll("T([0-9]{2})([A-Z]{3})","{{TILENUMBER}}");
+        template = template.replaceAll("(B01)|(B02)|(B03)|(B04)|(B05)|(B06)|(B07)|(B08)|(B8A)|(B09)|(B10)|(B11)|(B12)",bandFileId);
+        template = template.replaceAll("(_10m)|(_20m)|(_60m)","_{{RESOLUTION}}m");
+        return template;
     }
 
 }

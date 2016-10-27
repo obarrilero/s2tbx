@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,17 +68,21 @@ public abstract class S2Metadata {
 
     private ProductCharacteristics productCharacteristics;
 
+    protected HashMap<String, Path> resourceResolver;
+
 
     public S2Metadata(S2Config config, JAXBContext context, String psdString) throws JAXBException {
         this.config = config;
         this.unmarshaller = context.createUnmarshaller();
         this.psdString = psdString;
         this.metadataElements = new ArrayList<>();
+        this.resourceResolver = new HashMap<>();
     }
 
     public S2Metadata(S2Config config) {
         this.config = config;
         this.metadataElements = new ArrayList<>();
+        this.resourceResolver = new HashMap<>();
     }
 
     public S2Config getConfig() {
@@ -115,6 +120,10 @@ public abstract class S2Metadata {
 
     public void setProductCharacteristics(ProductCharacteristics productCharacteristics) {
         this.productCharacteristics = productCharacteristics;
+    }
+
+    public Path resolveResource(String identifier) {
+        return resourceResolver.get(identifier);
     }
 
     protected Object updateAndUnmarshal(InputStream xmlStream) throws IOException, JAXBException {

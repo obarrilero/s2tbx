@@ -21,12 +21,16 @@ package org.esa.s2tbx.dataio.s2.l2a;
 import org.esa.s2tbx.dataio.s2.S2BandConstants;
 import org.esa.s2tbx.dataio.s2.S2BandInformation;
 import org.esa.s2tbx.dataio.s2.S2IndexBandInformation;
+import org.esa.s2tbx.dataio.s2.S2ProductNamingManager;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
 import org.esa.s2tbx.dataio.s2.S2SpectralInformation;
 import org.esa.s2tbx.dataio.s2.ortho.S2OrthoMetadataProc;
 
 import java.awt.Color;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,11 +39,11 @@ import java.util.List;
  */
 public class L2aMetadataProc extends S2OrthoMetadataProc {
 
-    private static S2SpectralInformation makeSpectralInformation(S2BandConstants bandConstant, S2SpatialResolution resolution, double quantification) {
+    private static S2SpectralInformation makeSpectralInformation(Path path,S2BandConstants bandConstant, S2SpatialResolution resolution, double quantification) {
         return new S2SpectralInformation(
                 bandConstant.getPhysicalName(),
                 resolution,
-                makeSpectralBandImageFileTemplate(bandConstant.getFilenameBandId()),
+                makeSpectralBandImageFileTemplate(path,bandConstant.getFilenameBandId()),
                 "Reflectance in band " + bandConstant.getPhysicalName(),
                 "dl",
                 quantification,
@@ -49,23 +53,23 @@ public class L2aMetadataProc extends S2OrthoMetadataProc {
                 bandConstant.getWavelengthCentral());
     }
 
-    private static S2BandInformation makeAOTInformation(S2SpatialResolution resolution, double quantification) {
-        return new S2BandInformation("quality_aot", resolution, makeAOTFileTemplate(), "Aerosol Optical Thickness", "none", quantification);
+    private static S2BandInformation makeAOTInformation(Path path, S2SpatialResolution resolution, double quantification) {
+        return new S2BandInformation("quality_aot", resolution, makeAOTFileTemplate(path), "Aerosol Optical Thickness", "none", quantification);
     }
 
-    private static S2BandInformation makeWVPInformation(S2SpatialResolution resolution, double quantification) {
-        return new S2BandInformation("quality_wvp", resolution, makeWVPFileTemplate(), "Water Vapour", "cm", quantification);
+    private static S2BandInformation makeWVPInformation(Path path,S2SpatialResolution resolution, double quantification) {
+        return new S2BandInformation("quality_wvp", resolution, makeWVPFileTemplate(path), "Water Vapour", "cm", quantification);
     }
 
-    private static S2BandInformation makeCLDInformation(S2SpatialResolution resolution) {
-        return new S2BandInformation("quality_cloud_confidence", resolution, makeCLDFileTemplate(), "Cloud Confidence", "%", 1.0);
+    private static S2BandInformation makeCLDInformation(Path path,S2SpatialResolution resolution) {
+        return new S2BandInformation("quality_cloud_confidence", resolution, makeCLDFileTemplate(path), "Cloud Confidence", "%", 1.0);
     }
 
-    private static S2BandInformation makeSNWInformation(S2SpatialResolution resolution) {
-        return new S2BandInformation("quality_snow_confidence", resolution, makeSNWFileTemplate(), "Snow Confidence", "%", 1.0);
+    private static S2BandInformation makeSNWInformation(Path path,S2SpatialResolution resolution) {
+        return new S2BandInformation("quality_snow_confidence", resolution, makeSNWFileTemplate(path), "Snow Confidence", "%", 1.0);
     }
 
-    private static S2BandInformation makeDDVInformation(S2SpatialResolution resolution) {
+    private static S2BandInformation makeDDVInformation(Path path,S2SpatialResolution resolution) {
         List<S2IndexBandInformation.S2IndexBandIndex> indexList = new ArrayList<>();
         /* Using the same colors as in the L2A-PDD */
         indexList.add(S2IndexBandInformation.makeIndex(0, new Color(255, 255, 255), "NODATA", "No data"));
@@ -75,10 +79,10 @@ public class L2aMetadataProc extends S2OrthoMetadataProc {
         indexList.add(S2IndexBandInformation.makeIndex(4, new Color(0, 160, 0), "DDV", "Dark Dense Vegetation"));
         indexList.add(S2IndexBandInformation.makeIndex(5, new Color(192, 192, 192), "BACKGROUND", "Background"));
         indexList.add(S2IndexBandInformation.makeIndex(6, new Color(0, 0, 255), "WATER", "Water"));
-        return new S2IndexBandInformation("quality_dense_dark_vegetation", resolution, makeDDVFileTemplate(), "Dense Dark Vegetation", "", indexList, "ddv_");
+        return new S2IndexBandInformation("quality_dense_dark_vegetation", resolution, makeDDVFileTemplate(path), "Dense Dark Vegetation", "", indexList, "ddv_");
     }
 
-    private static S2BandInformation makeSCLInformation(S2SpatialResolution resolution) {
+    private static S2BandInformation makeSCLInformation(Path path,S2SpatialResolution resolution) {
         List<S2IndexBandInformation.S2IndexBandIndex> indexList = new ArrayList<>();
         /* Using the same colors as in the L2A-PDD */
         indexList.add(S2IndexBandInformation.makeIndex(0, new Color(0, 0, 0), "NODATA", "No data"));
@@ -93,10 +97,10 @@ public class L2aMetadataProc extends S2OrthoMetadataProc {
         indexList.add(S2IndexBandInformation.makeIndex(9, new Color(255, 255, 255), "CLOUD_HIGH_PROBA", "Cloud (high probability)"));
         indexList.add(S2IndexBandInformation.makeIndex(10, new Color(100, 200, 255), "THIN_CIRRUS", "Thin cirrus"));
         indexList.add(S2IndexBandInformation.makeIndex(11, new Color(255, 150, 255), "SNOW_ICE", "Snow or Ice"));
-        return new S2IndexBandInformation("quality_scene_classification", resolution, makeSCLFileTemplate(), "Scene classification", "", indexList, "scl_");
+        return new S2IndexBandInformation("quality_scene_classification", resolution, makeSCLFileTemplate(path), "Scene classification", "", indexList, "scl_");
     }
 
-    private static String makeSpectralBandImageFileTemplate(String bandFileId) {
+    private static String makeSpectralBandImageFileTemplate(Path path, String bandFileId) {
         /* Sample :
         MISSION_ID : S2A
         SITECENTRE : MTI_
@@ -105,111 +109,317 @@ public class L2aMetadataProc extends S2OrthoMetadataProc {
         TILENUMBER : T32TQR
         RESOLUTION : 10 | 20 | 60
          */
+        String sample = null;
+        Path imagesPath = null;
+        String[] images = null;
+        if(S2ProductNamingManager.checkStructureFromProductXml(path)) {
+            ArrayList<Path> tiles = S2ProductNamingManager.getTilesFromProductXml(path);
+            //todo checks...
+            imagesPath = tiles.get(0).resolve("IMG_DATA");
+        } else if(S2ProductNamingManager.checkStructureFromGranuleXml(path)) {
+            imagesPath = path.resolveSibling("IMG_DATA");
+        }
+        if(imagesPath != null) {
+            String[] subFolders = imagesPath.toFile().list();
+            for(String subFolder : subFolders) {
+                if(!subFolder.equals("R10m") && !subFolder.equals("R20m") && !subFolder.equals("R60m")) {
+                    continue;
+                }
+                Path resolutionPath = imagesPath.resolve(subFolder);
+                if(!Files.isDirectory(resolutionPath)) {
+                    continue;
+                }
+                images = resolutionPath.toFile().list();
+                break;
+            }
+
+            if(images != null && images.length>0) {
+                for(String image : images) {
+                    if(image.contains("B01") || image.contains("B02") ||image.contains("B03")||image.contains("B04")||image.contains("B05")||image.contains("B06")||
+                            image.contains("B07") || image.contains("B08") ||image.contains("B8A")||image.contains("B09")||image.contains("B10")||image.contains("B11")||image.contains("B12"))
+                    sample = "IMG_DATA" + File.separator + "R{{RESOLUTION}}m" + File.separator + S2ProductNamingManager.getImageTemplate(image, bandFileId);
+                }
+            }
+        }
+
+        if(sample != null) {
+            return sample;
+        }
         return String.format("IMG_DATA%sR{{RESOLUTION}}m%s{{MISSION_ID}}_USER_MSI_L2A_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_%s_{{RESOLUTION}}m.jp2",
                              File.separator, File.separator, bandFileId);
     }
 
-    private static String makeAOTFileTemplate() {
+    private static String makeAOTFileTemplate(Path path) {
+        String sample = null;
+        Path imagesPath = null;
+        String[] images = null;
+        if(S2ProductNamingManager.checkStructureFromProductXml(path)) {
+            ArrayList<Path> tiles = S2ProductNamingManager.getTilesFromProductXml(path);
+            //todo checks...
+            imagesPath = tiles.get(0).resolve("IMG_DATA");
+        } else if(S2ProductNamingManager.checkStructureFromGranuleXml(path)) {
+            imagesPath = path.resolveSibling("IMG_DATA");
+        }
+        if(imagesPath != null) {
+            String[] subFolders = imagesPath.toFile().list();
+            for(String subFolder : subFolders) {
+                if(!subFolder.equals("R10m") && !subFolder.equals("R20m") && !subFolder.equals("R60m")) {
+                    continue;
+                }
+                Path resolutionPath = imagesPath.resolve(subFolder);
+                if(!Files.isDirectory(resolutionPath)) {
+                    continue;
+                }
+                images = resolutionPath.toFile().list();
+                break;
+            }
+
+            if(images != null && images.length>0) {
+                for(String image : images) {
+                    if(image.contains("AOT"))
+                        sample = "IMG_DATA" + File.separator + "R{{RESOLUTION}}m" + File.separator + S2ProductNamingManager.getImageTemplate(image,null);
+                }
+            }
+        }
+
+        if(sample != null) {
+            return sample;
+        }
+
+
+
         return String.format("IMG_DATA%sR{{RESOLUTION}}m%s{{MISSION_ID}}_USER_AOT_L2A_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_{{RESOLUTION}}m.jp2",
                              File.separator, File.separator);
     }
 
-    private static String makeWVPFileTemplate() {
+    private static String makeWVPFileTemplate(Path path) {
+        String sample = null;
+        Path imagesPath = null;
+        String[] images = null;
+        if(S2ProductNamingManager.checkStructureFromProductXml(path)) {
+            ArrayList<Path> tiles = S2ProductNamingManager.getTilesFromProductXml(path);
+            //todo checks...
+            imagesPath = tiles.get(0).resolve("IMG_DATA");
+        } else if(S2ProductNamingManager.checkStructureFromGranuleXml(path)) {
+            imagesPath = path.resolveSibling("IMG_DATA");
+        }
+        if(imagesPath != null) {
+            String[] subFolders = imagesPath.toFile().list();
+            for(String subFolder : subFolders) {
+                if(!subFolder.equals("R10m") && !subFolder.equals("R20m") && !subFolder.equals("R60m")) {
+                    continue;
+                }
+                Path resolutionPath = imagesPath.resolve(subFolder);
+                if(!Files.isDirectory(resolutionPath)) {
+                    continue;
+                }
+                images = resolutionPath.toFile().list();
+                break;
+            }
+
+            if(images != null && images.length>0) {
+                for(String image : images) {
+                    if(image.contains("WVP"))
+                        sample = "IMG_DATA" + File.separator + "R{{RESOLUTION}}m" + File.separator + S2ProductNamingManager.getImageTemplate(image,null);
+                }
+            }
+        }
+
+        if(sample != null) {
+            return sample;
+        }
+
+
         return String.format("IMG_DATA%sR{{RESOLUTION}}m%s{{MISSION_ID}}_USER_WVP_L2A_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_{{RESOLUTION}}m.jp2",
                              File.separator, File.separator);
     }
 
-    private static String makeSCLFileTemplate() {
+    private static String makeSCLFileTemplate(Path path) {
+        String sample = null;
+        Path imagesPath = null;
+        String[] images = null;
+        if(S2ProductNamingManager.checkStructureFromProductXml(path)) {
+            ArrayList<Path> tiles = S2ProductNamingManager.getTilesFromProductXml(path);
+            //todo checks...
+            imagesPath = tiles.get(0).resolve("IMG_DATA");
+        } else if(S2ProductNamingManager.checkStructureFromGranuleXml(path)) {
+            imagesPath = path.resolveSibling("IMG_DATA");
+        }
+        if(imagesPath != null) {
+            images = imagesPath.toFile().list();
+
+
+            if(images != null && images.length>0) {
+                for(String image : images) {
+                    if(image.contains("SCL") && image.endsWith(".jp2"))
+                        sample = "IMG_DATA" + File.separator + S2ProductNamingManager.getImageTemplate(image,null);
+                }
+            }
+        }
+
+        if(sample != null) {
+            return sample;
+        }
+
         return String.format("IMG_DATA%s{{MISSION_ID}}_USER_SCL_L2A_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_{{RESOLUTION}}m.jp2", File.separator);
     }
 
-    private static String makeCLDFileTemplate() {
+    private static String makeCLDFileTemplate(Path path) {
+        String sample = null;
+        Path imagesPath = null;
+        String[] images = null;
+        if(S2ProductNamingManager.checkStructureFromProductXml(path)) {
+            ArrayList<Path> tiles = S2ProductNamingManager.getTilesFromProductXml(path);
+            //todo checks...
+            imagesPath = tiles.get(0).resolve("QI_DATA");
+        } else if(S2ProductNamingManager.checkStructureFromGranuleXml(path)) {
+            imagesPath = path.resolveSibling("QI_DATA");
+        }
+        if(imagesPath != null) {
+            images = imagesPath.toFile().list();
+            if(images != null && images.length>0) {
+                for(String image : images) {
+                    if(image.contains("CLD") && image.endsWith(".jp2"))
+                        sample = "QI_DATA" + File.separator + S2ProductNamingManager.getImageTemplate(image,null);
+                }
+            }
+        }
+
+        if(sample != null) {
+            return sample;
+        }
         return String.format("QI_DATA%s{{MISSION_ID}}_USER_CLD_L2A_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_{{RESOLUTION}}m.jp2", File.separator);
     }
 
-    private static String makeSNWFileTemplate() {
+    private static String makeSNWFileTemplate(Path path) {
+        String sample = null;
+        Path imagesPath = null;
+        String[] images = null;
+        if(S2ProductNamingManager.checkStructureFromProductXml(path)) {
+            ArrayList<Path> tiles = S2ProductNamingManager.getTilesFromProductXml(path);
+            //todo checks...
+            imagesPath = tiles.get(0).resolve("QI_DATA");
+        } else if(S2ProductNamingManager.checkStructureFromGranuleXml(path)) {
+            imagesPath = path.resolveSibling("QI_DATA");
+        }
+        if(imagesPath != null) {
+            images = imagesPath.toFile().list();
+            if(images != null && images.length>0) {
+                for(String image : images) {
+                    if(image.contains("SNW") && image.endsWith(".jp2"))
+                        sample = "QI_DATA" + File.separator + S2ProductNamingManager.getImageTemplate(image,null);
+                }
+            }
+        }
+
+        if(sample != null) {
+            return sample;
+        }
         return String.format("QI_DATA%s{{MISSION_ID}}_USER_SNW_L2A_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_{{RESOLUTION}}m.jp2", File.separator);
     }
 
-    private static String makeDDVFileTemplate() {
+    private static String makeDDVFileTemplate(Path path) {
+        String sample = null;
+        Path imagesPath = null;
+        String[] images = null;
+        if(S2ProductNamingManager.checkStructureFromProductXml(path)) {
+            ArrayList<Path> tiles = S2ProductNamingManager.getTilesFromProductXml(path);
+            //todo checks...
+            imagesPath = tiles.get(0).resolve("QI_DATA");
+        } else if(S2ProductNamingManager.checkStructureFromGranuleXml(path)) {
+            imagesPath = path.resolveSibling("QI_DATA");
+        }
+        if(imagesPath != null) {
+            images = imagesPath.toFile().list();
+            if(images != null && images.length>0) {
+                for(String image : images) {
+                    if(image.contains("DDV") && image.endsWith(".jp2"))
+                        sample = "QI_DATA" + File.separator + S2ProductNamingManager.getImageTemplate(image,null);
+                }
+            }
+        }
+
+        if(sample != null) {
+            return sample;
+        }
         return String.format("QI_DATA%s{{MISSION_ID}}_USER_DDV_L2A_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_{{RESOLUTION}}m.jp2", File.separator);
     }
 
-    public static List<S2BandInformation> getBandInformationList(S2SpatialResolution resolution,
+    public static List<S2BandInformation> getBandInformationList(Path path, S2SpatialResolution resolution,
                                                                  double boaQuantification,
                                                                  double aotQuantification,
                                                                  double wvpQuantification) {
         List<S2BandInformation> aInfo = new ArrayList<>();
         switch (resolution) {
             case R10M:
-                aInfo.add(makeSpectralInformation(S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B2, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B3, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B4, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B5, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B6, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B7, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B8, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B8A, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B2, S2SpatialResolution.R10M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B3, S2SpatialResolution.R10M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B4, S2SpatialResolution.R10M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B5, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B6, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B7, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B8, S2SpatialResolution.R10M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B8A, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
                 //aInfo.add(makeSpectralInformation(S2BandConstants.B10, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B11, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B12, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B11, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B12, S2SpatialResolution.R20M, boaQuantification));
 
-                aInfo.add(makeAOTInformation(S2SpatialResolution.R10M, aotQuantification));
-                aInfo.add(makeWVPInformation(S2SpatialResolution.R10M, wvpQuantification));
-                aInfo.add(makeCLDInformation(S2SpatialResolution.R20M));
-                aInfo.add(makeSNWInformation(S2SpatialResolution.R20M));
-                aInfo.add(makeDDVInformation(S2SpatialResolution.R20M));
+                aInfo.add(makeAOTInformation(path, S2SpatialResolution.R10M, aotQuantification));
+                aInfo.add(makeWVPInformation(path, S2SpatialResolution.R10M, wvpQuantification));
+                aInfo.add(makeCLDInformation(path, S2SpatialResolution.R20M));
+                aInfo.add(makeSNWInformation(path, S2SpatialResolution.R20M));
+                aInfo.add(makeDDVInformation(path, S2SpatialResolution.R20M));
 
                 // SCL only generated at 20m and 60m. upsample the 20m version
-                aInfo.add(makeSCLInformation(S2SpatialResolution.R20M));
+                aInfo.add(makeSCLInformation(path, S2SpatialResolution.R20M));
                 break;
             case R20M:
-                aInfo.add(makeSpectralInformation(S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B2, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B3, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B4, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B5, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B6, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B7, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B2, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B3, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B4, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B5, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B6, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B7, S2SpatialResolution.R20M, boaQuantification));
                 //aInfo.add(makeSpectralInformation(S2BandConstants.B8, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B8A, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B8A, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
                 //aInfo.add(makeSpectralInformation(S2BandConstants.B10, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B11, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B12, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B11, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B12, S2SpatialResolution.R20M, boaQuantification));
 
-                aInfo.add(makeAOTInformation(S2SpatialResolution.R20M, aotQuantification));
-                aInfo.add(makeWVPInformation(S2SpatialResolution.R20M, wvpQuantification));
-                aInfo.add(makeCLDInformation(S2SpatialResolution.R20M));
-                aInfo.add(makeSNWInformation(S2SpatialResolution.R20M));
-                aInfo.add(makeDDVInformation(S2SpatialResolution.R20M));
+                aInfo.add(makeAOTInformation(path, S2SpatialResolution.R20M, aotQuantification));
+                aInfo.add(makeWVPInformation(path, S2SpatialResolution.R20M, wvpQuantification));
+                aInfo.add(makeCLDInformation(path, S2SpatialResolution.R20M));
+                aInfo.add(makeSNWInformation(path, S2SpatialResolution.R20M));
+                aInfo.add(makeDDVInformation(path, S2SpatialResolution.R20M));
 
-                aInfo.add(makeSCLInformation(S2SpatialResolution.R20M));
+                aInfo.add(makeSCLInformation(path, S2SpatialResolution.R20M));
                 break;
             case R60M:
-                aInfo.add(makeSpectralInformation(S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B2, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B3, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B4, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B5, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B6, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B7, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B2, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B3, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B4, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B5, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B6, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B7, S2SpatialResolution.R60M, boaQuantification));
                 //aInfo.add(makeSpectralInformation(S2BandConstants.B8, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B8A, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B8A, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
                 //aInfo.add(makeSpectralInformation(S2BandConstants.B10, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B11, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(S2BandConstants.B12, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B11, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(path, S2BandConstants.B12, S2SpatialResolution.R60M, boaQuantification));
 
-                aInfo.add(makeAOTInformation(S2SpatialResolution.R60M, aotQuantification));
-                aInfo.add(makeWVPInformation(S2SpatialResolution.R60M, wvpQuantification));
-                aInfo.add(makeCLDInformation(S2SpatialResolution.R60M));
-                aInfo.add(makeSNWInformation(S2SpatialResolution.R60M));
-                aInfo.add(makeDDVInformation(S2SpatialResolution.R60M));
+                aInfo.add(makeAOTInformation(path, S2SpatialResolution.R60M, aotQuantification));
+                aInfo.add(makeWVPInformation(path, S2SpatialResolution.R60M, wvpQuantification));
+                aInfo.add(makeCLDInformation(path, S2SpatialResolution.R60M));
+                aInfo.add(makeSNWInformation(path, S2SpatialResolution.R60M));
+                aInfo.add(makeDDVInformation(path, S2SpatialResolution.R60M));
 
-                aInfo.add(makeSCLInformation(S2SpatialResolution.R60M));
+                aInfo.add(makeSCLInformation(path, S2SpatialResolution.R60M));
                 break;
         }
         return aInfo;

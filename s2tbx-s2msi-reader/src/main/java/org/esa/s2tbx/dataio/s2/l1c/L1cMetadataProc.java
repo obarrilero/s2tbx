@@ -54,12 +54,28 @@ public class L1cMetadataProc extends S2OrthoMetadataProc {
         RESOLUTION : 10 | 20 | 60
          */
         String sample = null;
+        Path imagesPath = null;
         if(S2ProductNamingManager.checkStructureFromProductXml(path)) {
             ArrayList<Path> tiles = S2ProductNamingManager.getTilesFromProductXml(path);
             //todo checks...
-            tiles.get(0).resolve("IMG_DATA")
+            imagesPath = tiles.get(0).resolve("IMG_DATA");
+        } else if(S2ProductNamingManager.checkStructureFromGranuleXml(path)) {
+            imagesPath = path.resolveSibling("IMG_DATA");
         }
-        return String.format("IMG_DATA%s{{MISSION_ID}}_OPER_MSI_L1C_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_%s.jp2", File.separator, bandFileId);
+        if(imagesPath != null) {
+            String[] images = imagesPath.toFile().list();
+            if(images != null && images.length>0) {
+                sample = "IMG_DATA" + File.separator + S2ProductNamingManager.getImageTemplate(images[0],bandFileId);
+            }
+        }
+
+        if(sample != null) {
+            return sample;
+        }
+
+
+
+        return String.format("{{MISSION_ID}}_OPER_MSI_L1C_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_%s.jp2", bandFileId);
     }
 
     public static List<S2BandInformation> getBandInformationList (Path path, double toaQuantification) {

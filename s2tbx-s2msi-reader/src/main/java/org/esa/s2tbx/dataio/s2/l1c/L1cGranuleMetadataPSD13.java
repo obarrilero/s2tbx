@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,7 +87,7 @@ public class L1cGranuleMetadataPSD13 extends GenericXmlMetadata implements IL1cG
         double toaQuantification = L1cPSD13Constants.DEFAULT_TOA_QUANTIFICATION;
         characteristics.setQuantificationValue(toaQuantification);
 
-        List<S2BandInformation> aInfo = L1cMetadataProc.getBandInformationList (toaQuantification);
+        List<S2BandInformation> aInfo = L1cMetadataProc.getBandInformationList (xmlPath,toaQuantification);
         int size = aInfo.size();
         characteristics.setBandInformations(aInfo.toArray(new S2BandInformation[size]));
 
@@ -168,8 +169,15 @@ public class L1cGranuleMetadataPSD13 extends GenericXmlMetadata implements IL1cG
             return null;
         }
         for (String maskFilename : maskFilenames) {
+            //To be sure that it is not a relative path and finish with .gml
+            String filenameProcessed = Paths.get(maskFilename).getFileName().toString();
+            if(!filenameProcessed.endsWith(".gml")) {
+                filenameProcessed = filenameProcessed + ".gml";
+            }
+
+
             Path QIData = path.resolveSibling("QI_DATA");
-            File GmlData = new File(QIData.toFile(), maskFilename);
+            File GmlData = new File(QIData.toFile(), filenameProcessed);
 
             aMaskList.add(new S2Metadata.MaskFilename(getAttributeSiblingValue(L1cPSD13Constants.PATH_GRANULE_METADATA_MASK_FILENAME, maskFilename,
                                                                                 L1cPSD13Constants.PATH_GRANULE_METADATA_MASK_BAND, null),

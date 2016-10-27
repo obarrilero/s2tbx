@@ -68,7 +68,7 @@ public class L3GranuleMetadataPSD13 extends GenericXmlMetadata implements IL3Gra
     }
 
     @Override
-    public S2Metadata.ProductCharacteristics getTileProductOrganization(S2SpatialResolution resolution) {
+    public S2Metadata.ProductCharacteristics getTileProductOrganization(Path path, S2SpatialResolution resolution) {
 
         S2Metadata.ProductCharacteristics characteristics = new S2Metadata.ProductCharacteristics();
         characteristics.setSpacecraft("Sentinel-2");

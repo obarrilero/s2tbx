@@ -77,7 +77,7 @@ public class L3ProductMetadataPSD13 extends GenericXmlMetadata implements IL3Pro
     }
 
     @Override
-    public S2Metadata.ProductCharacteristics getProductOrganization(S2SpatialResolution resolution) {
+    public S2Metadata.ProductCharacteristics getProductOrganization(Path path, S2SpatialResolution resolution) {
         L3Metadata.ProductCharacteristics characteristics = new L3Metadata.ProductCharacteristics();
         characteristics.setSpacecraft(getAttributeValue(L3PSD13Constants.PATH_PRODUCT_METADATA_SPACECRAFT, "Sentinel-2"));
         characteristics.setDatasetProductionDate(getAttributeValue(L3PSD13Constants.PATH_PRODUCT_METADATA_SENSING_START, "Unknown"));

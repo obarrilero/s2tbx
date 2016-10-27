@@ -76,12 +76,20 @@ public class L1cMetadata extends S2Metadata {
         IL1cProductMetadata metadataProduct = L1cMetadataFactory.createL1cProductMetadata(path);
         setProductCharacteristics(metadataProduct.getProductOrganization(path));
 
-        Collection<String> tileNames;
+        Collection<String> tileNames = null;
 
         if (granuleName == null) {
             tileNames = metadataProduct.getTiles();
         } else {
-            tileNames = Collections.singletonList(granuleName);
+            Collection<String> tileNamesAux = metadataProduct.getTiles();
+
+            for(String tileNameAux : tileNamesAux) {
+                String auxTileId = S2ProductNamingManager.getTileIdFromString(tileNameAux);
+                if(auxTileId.equals(S2ProductNamingManager.getTileIdFromString(granuleName))) {
+                    tileNames = Collections.singletonList(tileNameAux);
+                    break;
+                }
+            }
         }
 
         //add product metadata
@@ -110,6 +118,7 @@ public class L1cMetadata extends S2Metadata {
             for(Path granulePath : granulePaths) {
                 String tileIdAux = S2ProductNamingManager.getTileIdFromString(granulePath.getFileName().toString());
                 if(tileId.equals(tileIdAux)) {
+                    resourceResolver.put(tileName,granulePath);
                     Path nestedGranuleMetadata = S2ProductNamingManager.getXmlFromDir(granulePath);
                     if(nestedGranuleMetadata != null) {
                         granuleMetadataPathList.add(nestedGranuleMetadata);

@@ -186,7 +186,7 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
             rootMetaDataFile = metadataFile;
         }
 
-        final String aFilter = filterTileId;
+        //final String aFilter = filterTileId;
 
         S2Metadata metadataHeader = parseHeader(rootMetaDataFile, granuleDirName, getConfig(), epsgCode);
         SystemUtils.LOG.fine(String.format("[timeprobe] metadata parsing : %s ms", timeProbe.elapsed(TimeUnit.MILLISECONDS)));
@@ -248,9 +248,11 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
         List<BandInfo> bandInfoList = new ArrayList<>();
 
         List<S2Metadata.Tile> tileList = metadataHeader.getTileList();
-        if (isAGranule) {
-            tileList = tileList.stream().filter(p -> p.getId().equalsIgnoreCase(aFilter)).collect(Collectors.toList());
-        }
+        /*if (isAGranule) {
+            tileList = tileList.stream().filter(p -> {
+                return p.getId().equalsIgnoreCase(aFilter);
+            }).collect(Collectors.toList());
+        }*/
 
         // Verify access to granule image files, and store absolute location
         for (S2BandInformation bandInformation : productCharacteristics.getBandInformations()) {
@@ -261,23 +263,15 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
 
                     String imgFilename;
                     if(foundProductMetadata) {
-                        imgFilename = String.format("GRANULE%s%s%s%s", File.separator, tile.getId(),
+                        imgFilename = String.format("GRANULE%s%s%s%s", File.separator, metadataHeader.resolveResource(tile.getId()).getFileName().toString(),
                                                            File.separator,
                                                            bandInformation.getImageFileTemplate()
-                                                                   .replace("{{MISSION_ID}}", gf.missionID)
-                                                                   .replace("{{SITECENTRE}}", gf.siteCentre)
-                                                                   .replace("{{CREATIONDATE}}", gf.creationDate)
-                                                                   .replace("{{ABSOLUTEORBIT}}", gf.absoluteOrbit)
-                                                                   .replace("{{TILENUMBER}}", gf.tileNumber)
+                                                                   .replace("{{TILENUMBER}}", gf.getTileID())
                                                                    .replace("{{RESOLUTION}}", String.format("%d", bandInformation.getResolution().resolution)));
 
                     } else {
                         imgFilename = bandInformation.getImageFileTemplate()
-                                                            .replace("{{MISSION_ID}}", gf.missionID)
-                                                            .replace("{{SITECENTRE}}", gf.siteCentre)
-                                                            .replace("{{CREATIONDATE}}", gf.creationDate)
-                                                            .replace("{{ABSOLUTEORBIT}}", gf.absoluteOrbit)
-                                                            .replace("{{TILENUMBER}}", gf.tileNumber)
+                                                            .replace("{{TILENUMBER}}", gf.getTileID())
                                                             .replace("{{RESOLUTION}}", String.format("%d", bandInformation.getResolution().resolution));
 
                     }

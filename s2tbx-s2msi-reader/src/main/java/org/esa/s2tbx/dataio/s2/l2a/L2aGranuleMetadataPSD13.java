@@ -74,7 +74,7 @@ public class L2aGranuleMetadataPSD13 extends GenericXmlMetadata implements IL2aG
     }
 
     @Override
-    public S2Metadata.ProductCharacteristics getTileProductOrganization(S2SpatialResolution resolution) {
+    public S2Metadata.ProductCharacteristics getTileProductOrganization(Path path,S2SpatialResolution resolution) {
 
         S2Metadata.ProductCharacteristics characteristics = new S2Metadata.ProductCharacteristics();
         characteristics.setSpacecraft("Sentinel-2");
@@ -86,7 +86,7 @@ public class L2aGranuleMetadataPSD13 extends GenericXmlMetadata implements IL2aG
         double aotQuantification = L2aPSD13Constants.DEFAULT_AOT_QUANTIFICATION;
         double wvpQuantification = L2aPSD13Constants.DEFAULT_WVP_QUANTIFICATION;
 
-        List<S2BandInformation> aInfo = L2aMetadataProc.getBandInformationList(resolution,boaQuantification,aotQuantification,wvpQuantification);
+        List<S2BandInformation> aInfo = L2aMetadataProc.getBandInformationList(path, resolution,boaQuantification,aotQuantification,wvpQuantification);
         int size = aInfo.size();
         characteristics.setBandInformations(aInfo.toArray(new S2BandInformation[size]));
 

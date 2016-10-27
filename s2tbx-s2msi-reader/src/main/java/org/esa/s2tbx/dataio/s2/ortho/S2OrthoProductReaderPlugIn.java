@@ -131,6 +131,7 @@ public abstract class S2OrthoProductReaderPlugIn extends S2ProductReaderPlugIn {
             Path xmlPath = S2ProductNamingManager.getXmlFromDir(file.toPath());
             if(xmlPath != null) {
                 file = xmlPath.toFile();
+                fileName = file.getName();
             }
         }
 

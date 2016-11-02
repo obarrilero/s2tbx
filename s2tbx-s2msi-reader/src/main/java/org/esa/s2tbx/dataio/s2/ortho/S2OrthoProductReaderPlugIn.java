@@ -127,6 +127,8 @@ public abstract class S2OrthoProductReaderPlugIn extends S2ProductReaderPlugIn {
         File file = (File) input;
         String fileName = file.getName();
 
+        //TODO previous name checking
+
         if(file.isDirectory()) {
             Path xmlPath = S2ProductNamingManager.getXmlFromDir(file.toPath());
             if(xmlPath != null) {
@@ -135,11 +137,10 @@ public abstract class S2OrthoProductReaderPlugIn extends S2ProductReaderPlugIn {
             }
         }
 
-        //o  granule...
+
         if(file.isFile() && fileName.endsWith(".xml") && (S2ProductNamingManager.checkStructureFromProductXml(file.toPath()) || S2ProductNamingManager.checkStructureFromGranuleXml(file.toPath()))) {
             return file;
         }
-
 
         return null;
     }

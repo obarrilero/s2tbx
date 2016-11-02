@@ -23,6 +23,10 @@ public class S2ProductNamingManager {
 
     public static String[] EXCLUDED_XML = {"INSPIRE","L2A_Manifest", "manifest"};
     public static String TILE_ID_REGEX = "(.*)(T[0-9]{2}[A-Z]{3})(.*)";
+    public static String[] PRODUCT_REGEXs = {"(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_.*","(S2A|S2B|S2_)_([A-Z|0-9|_]{6})_([0-9]{8}T[0-9]{6})_N([0-9]{4})_R([0-9]{3})_.*"};
+    public static String[] PRODUCT_XML_REGEXs = {"(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_.*","MTD_MSIL(1C|2A|03)\\.xml"};
+    public static String[] GRANULE_REGEXs = {"(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_.*","(L1C|L2A|L03)_T([A-Z|0-9|_]{5})_A([0-9]{6})_([0-9]{8}T[0-9]{6})"};
+    public static String[] GRANULE_XML_REGEXs = {"(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_.*","MTD_TL\\.xml"};
 
     public static boolean checkStructureFromProductXml(Path xmlPath) {
         if(!Files.exists(xmlPath.resolveSibling("GRANULE"))) {

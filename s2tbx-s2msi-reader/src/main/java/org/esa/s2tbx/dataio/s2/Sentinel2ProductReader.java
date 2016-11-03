@@ -23,6 +23,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.esa.s2tbx.dataio.jp2.TileLayout;
 import org.esa.s2tbx.dataio.openjpeg.OpenJpegUtils;
 import org.esa.s2tbx.dataio.readers.PathUtils;
+import org.esa.s2tbx.dataio.s2.filepatterns.INamingConvention;
+import org.esa.s2tbx.dataio.s2.filepatterns.NamingConventionFactory;
 import org.esa.s2tbx.dataio.s2.filepatterns.S2ProductFilename;
 import org.esa.snap.core.dataio.AbstractProductReader;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
@@ -58,6 +60,8 @@ public abstract class Sentinel2ProductReader extends AbstractProductReader {
     private S2Config config;
     private File cacheDir;
     private Product product;
+
+    protected INamingConvention namingConvention;
 
 
 
@@ -139,18 +143,18 @@ public abstract class Sentinel2ProductReader extends AbstractProductReader {
             file = new File(getInput().toString());
         }
 
-        if (file.isDirectory() && (getReaderPlugIn() instanceof S2ProductReaderPlugIn)) {
-            inputFile = /*((S2ProductReaderPlugIn) getReaderPlugIn()).getInputXmlFileFromDirectory(file)*/S2ProductNamingManager.getXmlFromDir(file.toPath()).toFile();
-            setInput(inputFile);
-        } else {
-            inputFile = file;
+        namingConvention = NamingConventionFactory.createNamingConvention(file.toPath());
+        if(namingConvention == null) {
+            throw new IOException("Unhandled file type.");
         }
+
+        inputFile = namingConvention.getInputXml().toFile();
 
         if (!inputFile.exists()) {
             throw new FileNotFoundException(inputFile.getPath());
         }
 
-        if (/*S2ProductFilename.isMetadataFilename(inputFile.getName())*/S2ProductNamingManager.checkStructureFromProductXml(inputFile.toPath()) || S2ProductNamingManager.checkStructureFromGranuleXml(inputFile.toPath())) {
+        if (namingConvention.hasValidStructure()) {
             product = getMosaicProduct(inputFile);
 
             addQuicklook(product, getQuicklookFile(inputFile));

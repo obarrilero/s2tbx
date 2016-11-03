@@ -121,6 +121,8 @@ public class S2ProductNamingManager {
         return dirPath.resolve(xmlFile);
     }
 
+
+
     public static String getTileIdFromString(String string) {
         Pattern pattern = Pattern.compile(TILE_ID_REGEX);
         Matcher matcher = pattern.matcher(string);

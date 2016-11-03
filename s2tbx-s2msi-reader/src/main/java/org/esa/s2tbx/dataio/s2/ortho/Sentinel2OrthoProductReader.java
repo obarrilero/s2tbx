@@ -121,8 +121,6 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
     @Override
     protected Product getMosaicProduct(File metadataFile) throws IOException {
 
-
-
         if (!validateOpenJpegExecutables(S2Config.OPJ_INFO_EXE, S2Config.OPJ_DECOMPRESSOR_EXE)) {
             throw new IOException("Invalid OpenJpeg executables");
         }
@@ -213,7 +211,7 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
 
         S2Metadata.ProductCharacteristics productCharacteristics = metadataHeader.getProductCharacteristics();
 
-        Product product = new Product(FileUtils.getFilenameWithoutExtension(rootMetaDataFile),
+        Product product = new Product(/*FileUtils.getFilenameWithoutExtension(rootMetaDataFile)*/namingConvention.getProductName(),
                                       "S2_MSI_" + productCharacteristics.getProcessingLevel(),
                                       sceneDescription.getSceneDimension(getProductResolution()).width,
                                       sceneDescription.getSceneDimension(getProductResolution()).height);

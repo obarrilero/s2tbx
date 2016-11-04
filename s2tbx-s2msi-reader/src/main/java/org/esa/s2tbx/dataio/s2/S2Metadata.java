@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,7 @@ public abstract class S2Metadata {
 
     private S2Config config;
 
-    private Unmarshaller unmarshaller;
+    //private Unmarshaller unmarshaller;
 
     private String psdString;
 
@@ -70,19 +71,23 @@ public abstract class S2Metadata {
 
     protected HashMap<String, Path> resourceResolver;
 
+    //Image filename without extension in each tile
+    protected HashMap<String, Collection<String>> tileImages;
 
-    public S2Metadata(S2Config config, JAXBContext context, String psdString) throws JAXBException {
+
+    /*public S2Metadata(S2Config config, JAXBContext context, String psdString) throws JAXBException {
         this.config = config;
         this.unmarshaller = context.createUnmarshaller();
         this.psdString = psdString;
         this.metadataElements = new ArrayList<>();
         this.resourceResolver = new HashMap<>();
-    }
+    }*/
 
     public S2Metadata(S2Config config) {
         this.config = config;
         this.metadataElements = new ArrayList<>();
         this.resourceResolver = new HashMap<>();
+        this.tileImages = new HashMap<>();
     }
 
     public S2Config getConfig() {
@@ -126,11 +131,11 @@ public abstract class S2Metadata {
         return resourceResolver.get(identifier);
     }
 
-    protected Object updateAndUnmarshal(InputStream xmlStream) throws IOException, JAXBException {
+    /*protected Object updateAndUnmarshal(InputStream xmlStream) throws IOException, JAXBException {
         InputStream updatedStream = changePSDIfRequired(xmlStream, psdString);
         Object ob = unmarshaller.unmarshal(updatedStream);
         return ((JAXBElement) ob).getValue();
-    }
+    }*/
 
     /**
      * from the input stream, replace the psd number in the header to allow jaxb to find

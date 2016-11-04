@@ -92,6 +92,9 @@ public class L1cMetadata extends S2Metadata {
             }
         }
 
+        //test getimages
+
+
         //add product metadata
         getMetadataElements().add(metadataProduct.getMetadataElement());
 
@@ -108,7 +111,9 @@ public class L1cMetadata extends S2Metadata {
         ArrayList<Path> granulePaths = S2ProductNamingManager.getTilesFromProductXml(path);
         ArrayList<Path> granuleMetadataPathList = new ArrayList<>();
         for (String tileName : tileNames) {
-            //S2OrthoGranuleDirFilename aGranuleDir = S2OrthoGranuleDirFilename.create(tileName);
+            Collection<String> images = metadataProduct.getImagesFromTile(tileName);
+            //TODO ransformar en full paths
+            tileImages.put(tileName,images);
             S2ProductNamingManager.getTileIdFromString(tileName);
             String tileId = S2ProductNamingManager.getTileIdFromString(tileName);
             if(tileId == null) {

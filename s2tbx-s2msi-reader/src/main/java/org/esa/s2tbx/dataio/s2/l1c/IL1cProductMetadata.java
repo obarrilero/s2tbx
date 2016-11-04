@@ -14,7 +14,8 @@ import java.util.Collection;
 public interface IL1cProductMetadata {
     S2Metadata.ProductCharacteristics getProductOrganization(Path xmlPath);
     Collection<String> getTiles();
-    S2DatastripFilename getDatastrip();
+    Collection<String> getImagesFromTile(String tileId);
+    Collection<String> getDatastripIds();
     S2DatastripDirFilename getDatastripDir();
     MetadataElement getMetadataElement();
 }

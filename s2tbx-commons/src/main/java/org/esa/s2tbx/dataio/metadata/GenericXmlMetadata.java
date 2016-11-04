@@ -20,6 +20,7 @@ package org.esa.s2tbx.dataio.metadata;
 import com.bc.ceres.core.Assert;
 import org.esa.snap.core.datamodel.MetadataAttribute;
 import org.esa.snap.core.datamodel.MetadataElement;
+import org.esa.snap.core.util.io.FileUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -314,6 +316,34 @@ public abstract class GenericXmlMetadata {
             }
         }
         return value;
+    }
+
+    public String[] getAttributeSiblingValues(String attributePath, String attributeValue, String siblingPath) {
+        ArrayList<String> values = new ArrayList<>();
+        if (attributePath != null && siblingPath != null && attributeValue != null) {
+            attributePath = ensureAttributeTagPresent(attributePath);
+            List<MetadataAttribute> attributes;
+            if (attributeMap.containsKey(attributePath) && (attributes = attributeMap.get(attributePath)) != null && attributes.size() > 0) {
+
+                for (int i = 0; i < attributes.size(); i++) {
+                    if (attributeValue.equalsIgnoreCase(attributes.get(i).getData().getElemString())) {
+                        MetadataAttribute[] parentAttributes=attributes.get(i).getParentElement().getAttributes();
+                        for(MetadataAttribute attribute : parentAttributes) {
+                            if(attribute.getName().equals(FileUtils.getFileNameFromPath(Paths.get(siblingPath).getFileName().toString()))) {
+                                values.add(attribute.getData().toString());
+                            }
+                        }
+                    }
+                }
+            } else {
+                warn(NO_SUCH_PATH_WARNING, attributePath);
+            }
+        }
+        if(values.size()>0) {
+            return values.toArray(new String[values.size()]);
+        } else {
+            return null;
+        }
     }
 
     protected void warn(String message, String argument) {

@@ -114,6 +114,35 @@ public class L1cProductMetadataPSD13 extends GenericXmlMetadata implements IL1cP
     }
 
     @Override
+    public Collection<String> getImagesFromTile(String tileId){
+
+        String[] imageList = getAttributeSiblingValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_GRANULE_LIST,tileId,L1cPSD13Constants.PATH_PRODUCT_METADATA_IMAGE_ID);
+        if(imageList != null) return new ArrayList<>(Arrays.asList(imageList));
+        imageList = getAttributeSiblingValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_GRANULE_LIST_ALT,tileId,L1cPSD13Constants.PATH_PRODUCT_METADATA_IMAGE_FILE_ALT);
+        if(imageList != null) return new ArrayList<>(Arrays.asList(imageList));
+        imageList = getAttributeSiblingValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_GRANULE_LIST_ALT,tileId,L1cPSD13Constants.PATH_PRODUCT_METADATA_IMAGE_ID);
+        if(imageList != null) return new ArrayList<>(Arrays.asList(imageList));
+        imageList = getAttributeSiblingValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_GRANULE_LIST,tileId,L1cPSD13Constants.PATH_PRODUCT_METADATA_IMAGE_FILE);
+        if(imageList != null) return new ArrayList<>(Arrays.asList(imageList));
+
+        return null;
+
+    }
+
+
+    @Override
+    public Collection<String> getDatastripIds() {
+        String[] datastripList = getAttributeValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_DATASTRIP_LIST);
+        if (datastripList == null) {
+            datastripList = getAttributeValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_DATASTRIP_LIST_ALT);
+            if (datastripList == null) {
+                return null;
+            }
+        }
+        return new ArrayList<>(Arrays.asList(datastripList));
+    }
+
+
     public S2DatastripFilename getDatastrip() {
         String[] datastripList = getAttributeValues(L1cPSD13Constants.PATH_PRODUCT_METADATA_DATASTRIP_LIST);
         if(datastripList == null) {

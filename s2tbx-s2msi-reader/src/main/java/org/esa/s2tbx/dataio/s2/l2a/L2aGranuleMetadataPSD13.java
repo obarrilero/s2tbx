@@ -7,6 +7,7 @@ import org.esa.s2tbx.dataio.metadata.XmlMetadataParser;
 import org.esa.s2tbx.dataio.s2.S2BandInformation;
 import org.esa.s2tbx.dataio.s2.S2Metadata;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
+import org.esa.s2tbx.dataio.s2.filepatterns.SAFECOMPACTNamingConvention;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.xml.sax.SAXException;
 
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by obarrile on 04/10/2016.
@@ -77,6 +80,35 @@ public class L2aGranuleMetadataPSD13 extends GenericXmlMetadata implements IL2aG
     public S2Metadata.ProductCharacteristics getTileProductOrganization(Path path,S2SpatialResolution resolution) {
 
         S2Metadata.ProductCharacteristics characteristics = new S2Metadata.ProductCharacteristics();
+
+        //DatatakeSensingStart is not in the metadata, but it is needed for the image templates. We read it from the file system
+        //TODO review
+        Path folder = path.resolveSibling("IMG_DATA");
+        Pattern pattern = Pattern.compile(SAFECOMPACTNamingConvention.SPECTRAL_BAND_REGEX);
+        characteristics.setDatatakeSensingStartTime("Unknown");
+        boolean bFound = false;
+        if(Files.exists(folder) && Files.isDirectory(folder)) {
+            File[] resolutions = folder.toFile().listFiles();
+            for (File resolutionFolder :resolutions){
+                if(resolutionFolder.isDirectory()) {
+                    File[] images = resolutionFolder.listFiles();
+                    if (images != null && images.length > 0) {
+                        for (File image : images) {
+                            String imageName = image.getName();
+                            Matcher matcher = pattern.matcher(imageName);
+                            if (matcher.matches()) {
+                                characteristics.setDatatakeSensingStartTime(matcher.group(2));
+                                bFound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if(bFound) {
+                    break;
+                }
+            }
+        }
         characteristics.setSpacecraft("Sentinel-2");
         characteristics.setProcessingLevel("Level-2A");
         characteristics.setMetaDataLevel("Standard");
@@ -194,6 +226,7 @@ public class L2aGranuleMetadataPSD13 extends GenericXmlMetadata implements IL2aG
         String tileId = getAttributeValue(L2aPSD13Constants.PATH_GRANULE_METADATA_TILE_ID, null);
         if(tileId == null || tileId.length()<56) {
             setName("Level-2A_Tile_ID");
+            return;
         }
         setName("Level-2A_Tile_" + tileId.substring(50, 55));
     }

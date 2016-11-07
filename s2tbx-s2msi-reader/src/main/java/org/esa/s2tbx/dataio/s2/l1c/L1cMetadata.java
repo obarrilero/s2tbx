@@ -54,15 +54,15 @@ public class L1cMetadata extends S2Metadata {
 
     protected Logger logger = SystemUtils.LOG;
 
-    public static L1cMetadata parseHeader(File file, String granuleName, S2Config config, String epsg) throws IOException, ParserConfigurationException, SAXException {
-        return new L1cMetadata(file.toPath(), granuleName, config, epsg);
+    public static L1cMetadata parseHeader(File file, String granuleName, S2Config config, String epsg, boolean isAGranule) throws IOException, ParserConfigurationException, SAXException {
+        return new L1cMetadata(file.toPath(), granuleName, config, epsg, isAGranule);
     }
 
 
-    private L1cMetadata(Path path, String granuleName, S2Config s2config, String epsg) throws IOException, ParserConfigurationException, SAXException {
+    private L1cMetadata(Path path, String granuleName, S2Config s2config, String epsg, boolean isAGranule) throws IOException, ParserConfigurationException, SAXException {
         super(s2config);
         resetTileList();
-        boolean isGranuleMetadata = S2OrthoGranuleMetadataFilename.isGranuleFilename(path.getFileName().toString());
+        boolean isGranuleMetadata = isAGranule;
 
         if(!isGranuleMetadata) {
             initProduct(path, granuleName, epsg);

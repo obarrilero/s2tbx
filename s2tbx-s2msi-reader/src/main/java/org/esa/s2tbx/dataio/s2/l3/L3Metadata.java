@@ -32,18 +32,18 @@ public class L3Metadata extends S2Metadata {
 
     protected Logger logger = SystemUtils.LOG;
 
-    public static L3Metadata parseHeader(File file, String granuleName, S2Config config, String epsg, S2SpatialResolution productResolution) throws IOException, ParserConfigurationException, SAXException {
+    public static L3Metadata parseHeader(File file, String granuleName, S2Config config, String epsg, S2SpatialResolution productResolution, boolean isAGranule) throws IOException, ParserConfigurationException, SAXException {
 
-        return new L3Metadata(file.toPath(), granuleName, config, epsg, productResolution);
+        return new L3Metadata(file.toPath(), granuleName, config, epsg, productResolution, isAGranule);
 
     }
 
-    private L3Metadata(Path path, String granuleName, S2Config config, String epsg, S2SpatialResolution productResolution) throws  IOException, ParserConfigurationException, SAXException {
+    private L3Metadata(Path path, String granuleName, S2Config config, String epsg, S2SpatialResolution productResolution, boolean isAGranule) throws  IOException, ParserConfigurationException, SAXException {
         super(config);
 
         resetTileList();
         int maxIndex = 0;
-        boolean isGranuleMetadata = S2OrthoGranuleMetadataFilename.isGranuleFilename(path.getFileName().toString());
+        boolean isGranuleMetadata = isAGranule;
 
         if(!isGranuleMetadata) {
             maxIndex = initProduct(path, granuleName, epsg, productResolution);

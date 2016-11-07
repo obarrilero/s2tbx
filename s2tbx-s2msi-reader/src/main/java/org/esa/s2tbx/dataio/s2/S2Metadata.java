@@ -488,10 +488,19 @@ public abstract class S2Metadata {
         private String datasetProductionDate;
         private String productStartTime;
         private String productStopTime;
+        private String datatakeSensingStartTime;
         private String processingLevel;
         private S2BandInformation[] bandInformations;
         private String metaDataLevel;
         private double quantificationValue;
+
+        public String getDatatakeSensingStartTime () {
+            return datatakeSensingStartTime;
+        }
+
+        public void setDatatakeSensingStartTime (String datatakeSensingStartTime) {
+            this.datatakeSensingStartTime = datatakeSensingStartTime;
+        }
 
         public String getSpacecraft() {
             return spacecraft;

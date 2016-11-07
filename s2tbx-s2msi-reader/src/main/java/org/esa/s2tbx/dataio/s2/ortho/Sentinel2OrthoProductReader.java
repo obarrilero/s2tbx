@@ -38,6 +38,7 @@ import org.esa.s2tbx.dataio.s2.ortho.filepatterns.S2OrthoGranuleDirFilename;
 import org.esa.s2tbx.dataio.s2.ortho.filepatterns.S2OrthoGranuleMetadataFilename;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.image.SourceImageScaler;
 import org.esa.snap.core.util.SystemUtils;
@@ -114,7 +115,7 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
 
     protected abstract String getReaderCacheDir();
 
-    protected abstract S2Metadata parseHeader(File file, String granuleName, S2Config config, String epsg) throws IOException;
+    protected abstract S2Metadata parseHeader(File file, String granuleName, S2Config config, String epsg, boolean isAGranule) throws IOException;
 
     protected abstract String getImagePathString(String imageFileName, S2SpatialResolution resolution);
 
@@ -186,7 +187,7 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
 
         //final String aFilter = filterTileId;
 
-        S2Metadata metadataHeader = parseHeader(rootMetaDataFile, granuleDirName, getConfig(), epsgCode);
+        S2Metadata metadataHeader = parseHeader(rootMetaDataFile, granuleDirName, getConfig(), epsgCode, !foundProductMetadata);
         SystemUtils.LOG.fine(String.format("[timeprobe] metadata parsing : %s ms", timeProbe.elapsed(TimeUnit.MILLISECONDS)));
         timeProbe.reset();
 
@@ -264,12 +265,22 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
                         imgFilename = String.format("GRANULE%s%s%s%s", File.separator, metadataHeader.resolveResource(tile.getId()).getFileName().toString(),
                                                            File.separator,
                                                            bandInformation.getImageFileTemplate()
-                                                                   .replace("{{TILENUMBER}}", gf.getTileID())
-                                                                   .replace("{{RESOLUTION}}", String.format("%d", bandInformation.getResolution().resolution)));
+                                                            .replace("{{TILENUMBER}}", gf.getTileID())
+                                                            .replace("{{MISSION_ID}}", gf.missionID)
+                                                            .replace("{{SITECENTRE}}", gf.siteCentre)
+                                                            .replace("{{CREATIONDATE}}", gf.creationDate)
+                                                            .replace("{{ABSOLUTEORBIT}}", gf.absoluteOrbit)
+                                                            .replace("{{DATATAKE_START}}", metadataHeader.getProductCharacteristics().getDatatakeSensingStartTime())
+                                                            .replace("{{RESOLUTION}}", String.format("%d", bandInformation.getResolution().resolution)));
 
                     } else {
                         imgFilename = bandInformation.getImageFileTemplate()
                                                             .replace("{{TILENUMBER}}", gf.getTileID())
+                                                            .replace("{{MISSION_ID}}", gf.missionID)
+                                                            .replace("{{SITECENTRE}}", gf.siteCentre)
+                                                            .replace("{{CREATIONDATE}}", gf.creationDate)
+                                                            .replace("{{ABSOLUTEORBIT}}", gf.absoluteOrbit)
+                                                            .replace("{{DATATAKE_START}}", metadataHeader.getProductCharacteristics().getDatatakeSensingStartTime())
                                                             .replace("{{RESOLUTION}}", String.format("%d", bandInformation.getResolution().resolution));
 
                     }

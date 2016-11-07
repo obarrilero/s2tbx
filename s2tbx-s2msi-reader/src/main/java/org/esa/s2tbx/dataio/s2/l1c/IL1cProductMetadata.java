@@ -18,4 +18,5 @@ public interface IL1cProductMetadata {
     Collection<String> getDatastripIds();
     S2DatastripDirFilename getDatastripDir();
     MetadataElement getMetadataElement();
+    String getFormat();
 }

@@ -50,15 +50,15 @@ public class L2aMetadata extends S2Metadata {
 
     protected Logger logger = SystemUtils.LOG;
 
-    public static L2aMetadata parseHeader(File file, String granuleName, S2Config config, String epsg, S2SpatialResolution productResolution) throws IOException, ParserConfigurationException, SAXException {
-        return new L2aMetadata(file.toPath(), granuleName, config, epsg, productResolution);
+    public static L2aMetadata parseHeader(File file, String granuleName, S2Config config, String epsg, S2SpatialResolution productResolution, boolean isAGranule) throws IOException, ParserConfigurationException, SAXException {
+        return new L2aMetadata(file.toPath(), granuleName, config, epsg, productResolution, isAGranule);
     }
 
 
-    private L2aMetadata(Path path, String granuleName, S2Config s2config, String epsg, S2SpatialResolution productResolution) throws IOException, ParserConfigurationException, SAXException {
+    private L2aMetadata(Path path, String granuleName, S2Config s2config, String epsg, S2SpatialResolution productResolution, boolean isAGranule) throws IOException, ParserConfigurationException, SAXException {
         super(s2config);
         resetTileList();
-        boolean isGranuleMetadata = S2OrthoGranuleMetadataFilename.isGranuleFilename(path.getFileName().toString());
+        boolean isGranuleMetadata = isAGranule;
 
         if(!isGranuleMetadata) {
             initProduct(path, granuleName, epsg, productResolution);

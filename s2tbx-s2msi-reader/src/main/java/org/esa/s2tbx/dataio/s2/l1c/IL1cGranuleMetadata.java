@@ -28,4 +28,5 @@ public interface IL1cGranuleMetadata {
     S2Metadata.MaskFilename[] getMasks(Path path);
     MetadataElement getMetadataElement();
     MetadataElement getSimplifiedMetadataElement();
+    String getFormat();
 }

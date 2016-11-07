@@ -8,6 +8,7 @@ import org.esa.s2tbx.dataio.s2.S2Metadata;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
 import org.esa.s2tbx.dataio.s2.filepatterns.S2DatastripDirFilename;
 import org.esa.s2tbx.dataio.s2.filepatterns.S2DatastripFilename;
+import org.esa.s2tbx.dataio.s2.l1c.L1cPSD13Constants;
 import org.esa.s2tbx.dataio.s2.ortho.filepatterns.S2OrthoDatastripFilename;
 import org.esa.s2tbx.dataio.s2.ortho.filepatterns.S2OrthoGranuleDirFilename;
 import org.esa.snap.core.datamodel.MetadataElement;
@@ -79,6 +80,19 @@ public class L3ProductMetadataPSD13 extends GenericXmlMetadata implements IL3Pro
     @Override
     public S2Metadata.ProductCharacteristics getProductOrganization(Path path, S2SpatialResolution resolution) {
         L3Metadata.ProductCharacteristics characteristics = new L3Metadata.ProductCharacteristics();
+
+        String datatakeSensingStart = getAttributeValue(L1cPSD13Constants.PATH_PRODUCT_METADATA_SENSING_START, null);
+        if(datatakeSensingStart!=null && datatakeSensingStart.length()>19) {
+            String formattedDatatakeSensingStart = datatakeSensingStart.substring(0,4) +
+                    datatakeSensingStart.substring(5,7) +
+                    datatakeSensingStart.substring(8,13) +
+                    datatakeSensingStart.substring(14,16)+
+                    datatakeSensingStart.substring(17,19);
+            characteristics.setDatatakeSensingStartTime(formattedDatatakeSensingStart);
+        } else {
+            characteristics.setDatatakeSensingStartTime("Unknown");
+        }
+
         characteristics.setSpacecraft(getAttributeValue(L3PSD13Constants.PATH_PRODUCT_METADATA_SPACECRAFT, "Sentinel-2"));
         characteristics.setDatasetProductionDate(getAttributeValue(L3PSD13Constants.PATH_PRODUCT_METADATA_SENSING_START, "Unknown"));
         characteristics.setProcessingLevel(getAttributeValue(L3PSD13Constants.PATH_PRODUCT_METADATA_PROCESSING_LEVEL, "Level-3"));

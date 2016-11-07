@@ -6,6 +6,7 @@ import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
 import org.esa.s2tbx.dataio.s2.l2a.L2aUtils;
 import org.esa.snap.core.util.io.FileUtils;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
@@ -19,6 +20,15 @@ public class SAFECOMPACTNamingConvention implements INamingConvention {
     public static String PRODUCT_XML_REGEX = "MTD_MSIL(1C|2A|03)\\.xml";
     public static String GRANULE_REGEX = "(L1C|L2A|L03)_T([A-Z|0-9|_]{5})_A([0-9]{6})_([0-9]{8}T[0-9]{6})";
     public static String GRANULE_XML_REGEX = "MTD_TL\\.xml";
+    public static String SPECTRAL_BAND_TEMPLATE = "IMG_DATA" + File.separator + "{{TILENUMBER}}_{{DATATAKE_START}}_{{BANDFILEID}}.jp2";
+    public static String SPECTRAL_BAND_REGEX = "T([A-Z|0-9|_]{5})_([0-9]{8}T[0-9]{6})_B([A|0-9]{2})\\.jp2";
+    public static String SPECTRAL_BAND_TEMPLATE_L2A = "IMG_DATA"+ File.separator +"R{{RESOLUTION}}m" + File.separator + "{{TILENUMBER}}_{{DATATAKE_START}}_{{BANDFILEID}}_{{RESOLUTION}}m.jp2";
+    public static String AOT_FILE_TEMPLATE_L2A = "IMG_DATA" + File.separator + "R{{RESOLUTION}}m" + File.separator +"{{TILENUMBER}}_{{DATATAKE_START}}_AOT_{{RESOLUTION}}m.jp2";
+    public static String WVP_FILE_TEMPLATE_L2A = "IMG_DATA" + File.separator + "R{{RESOLUTION}}m" + File.separator + "{{TILENUMBER}}_{{DATATAKE_START}}_WVP_{{RESOLUTION}}m.jp2";
+    public static String SCL_FILE_TEMPLATE_L2A = "IMG_DATA" + File.separator + "{{TILENUMBER}}_{{DATATAKE_START}}_SCL_{{RESOLUTION}}m.jp2";
+    public static String CLD_FILE_TEMPLATE_L2A = "QI_DATA" + File.separator + "{{TILENUMBER}}_{{DATATAKE_START}}_CLD_{{RESOLUTION}}m.jp2";
+    public static String SNW_FILE_TEMPLATE_L2A = "QI_DATA" + File.separator + "{{TILENUMBER}}_{{DATATAKE_START}}_SNW_{{RESOLUTION}}m.jp2";
+    public static String DDV_FILE_TEMPLATE_L2A = "QI_DATA" + File.separator + "{{TILENUMBER}}_{{DATATAKE_START}}_DDV_{{RESOLUTION}}m.jp2";
 
     private S2Config.Sentinel2InputType inputType = null;
     private S2Config.Sentinel2ProductLevel level = S2Config.Sentinel2ProductLevel.UNKNOWN;

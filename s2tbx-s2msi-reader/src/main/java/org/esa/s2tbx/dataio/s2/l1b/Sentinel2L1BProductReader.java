@@ -177,7 +177,7 @@ public class Sentinel2L1BProductReader extends Sentinel2ProductReader {
             throw new IOException("Invalid OpenJpeg executables");
         }
 
-        boolean isAGranule = S2L1BGranuleMetadataFilename.isGranuleFilename(metadataFile.getName());
+        boolean isAGranule = /*S2L1BGranuleMetadataFilename.isGranuleFilename(metadataFile.getName())*/namingConvention.getInputType() == S2Config.Sentinel2InputType.INPUT_TYPE_GRANULE_METADATA;
         boolean foundProductMetadata = true;
 
         if (isAGranule) {
@@ -316,7 +316,7 @@ public class Sentinel2L1BProductReader extends Sentinel2ProductReader {
         Product product;
 
         if (sceneDescription != null) {
-            product = new Product(FileUtils.getFilenameWithoutExtension(productMetadataFile),
+            product = new Product(/*FileUtils.getFilenameWithoutExtension(productMetadataFile)*/namingConvention.getProductName(),
                                   "S2_MSI_" + productCharacteristics.getProcessingLevel(),
                                   sceneDescription.getSceneRectangle().width,
                                   sceneDescription.getSceneRectangle().height);
@@ -340,11 +340,21 @@ public class Sentinel2L1BProductReader extends Sentinel2ProductReader {
             if(sceneDescription.getOrderedTileIds().size()>1 && !bandInfoByKey.isEmpty()) {
                 ArrayList<S2SpatialResolution> resolutions = new ArrayList<>();
                 //look for the resolutions used in bandInfoList for generating the tile index only for them
-                for(BandInfo bandInfo : bandInfoByKey.values()) {
+                if(interpretation == ProductInterpretation.RESOLUTION_10M || interpretation == ProductInterpretation.RESOLUTION_MULTI) {
+                    resolutions.add(S2SpatialResolution.R10M);
+                }
+                if(interpretation == ProductInterpretation.RESOLUTION_20M || interpretation == ProductInterpretation.RESOLUTION_MULTI) {
+                    resolutions.add(S2SpatialResolution.R20M);
+                }
+                if(interpretation == ProductInterpretation.RESOLUTION_60M || interpretation == ProductInterpretation.RESOLUTION_MULTI) {
+                    resolutions.add(S2SpatialResolution.R60M);
+                }
+
+                /*for(BandInfo bandInfo : bandInfoByKey.values()) {
                     if(!resolutions.contains(bandInfo.getBandInformation().getResolution())) {
                         resolutions.add(bandInfo.getBandInformation().getResolution());
                     }
-                }
+                }*/
                 addTileIndexes(product, resolutions, tileList, sceneDescription,sceneDimensions);
 
             }

@@ -36,7 +36,6 @@ public class L1cMetadataProc extends S2OrthoMetadataProc {
                 bandConstant.getPhysicalName(),
                 resolution,
                 NamingConventionFactory.getSpectralBandImageTemplate_L1c(format,bandConstant.getFilenameBandId()),
-                //makeSpectralBandImageFileTemplate(path, bandConstant.getFilenameBandId()),
                 "Reflectance in band " + bandConstant.getPhysicalName(),
                 "dl",
                 quantification,
@@ -46,39 +45,6 @@ public class L1cMetadataProc extends S2OrthoMetadataProc {
                 bandConstant.getWavelengthCentral());
     }
 
-    /*private static String makeSpectralBandImageFileTemplate(Path path,String bandFileId) {
-        // Sample :
-        // MISSION_ID : S2A
-        // SITECENTRE : MTI_
-        // CREATIONDATE : 20150813T201603
-        // ABSOLUTEORBIT : A000734
-        // TILENUMBER : T32TQR
-        // RESOLUTION : 10 | 20 | 60
-
-        String sample = null;
-        Path imagesPath = null;
-        if(S2ProductNamingManager.checkStructureFromProductXml(path)) {
-            ArrayList<Path> tiles = S2ProductNamingManager.getTilesFromProductXml(path);
-            //todo checks...
-            imagesPath = tiles.get(0).resolve("IMG_DATA");
-        } else if(S2ProductNamingManager.checkStructureFromGranuleXml(path)) {
-            imagesPath = path.resolveSibling("IMG_DATA");
-        }
-        if(imagesPath != null) {
-            String[] images = imagesPath.toFile().list();
-            if(images != null && images.length>0) {
-                sample = "IMG_DATA" + File.separator + S2ProductNamingManager.getImageTemplate(images[0],bandFileId);
-            }
-        }
-
-        if(sample != null) {
-            return sample;
-        }
-
-
-
-        return String.format("{{MISSION_ID}}_OPER_MSI_L1C_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_%s.jp2", bandFileId);
-    }*/
 
     public static List<S2BandInformation> getBandInformationList (String format, double toaQuantification) {
         List<S2BandInformation> aInfo = new ArrayList<>();

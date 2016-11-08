@@ -20,6 +20,8 @@ public class SAFECOMPACTNamingConvention implements INamingConvention {
     public static String PRODUCT_XML_REGEX = "MTD_MSIL(1C|2A|03)\\.xml";
     public static String GRANULE_REGEX = "(L1C|L2A|L03)_T([A-Z|0-9|_]{5})_A([0-9]{6})_([0-9]{8}T[0-9]{6})";
     public static String GRANULE_XML_REGEX = "MTD_TL\\.xml";
+
+    //Templates level 1c
     public static String SPECTRAL_BAND_TEMPLATE_L1C = "IMG_DATA" + File.separator + "{{TILENUMBER}}_{{DATATAKE_START}}_{{BANDFILEID}}.jp2";
     public static String SPECTRAL_BAND_REGEX = "T([A-Z|0-9|_]{5})_([0-9]{8}T[0-9]{6})_B([A|0-9]{2})\\.jp2";
 
@@ -44,25 +46,7 @@ public class SAFECOMPACTNamingConvention implements INamingConvention {
     Path inputXmlPath = null;
     private S2SpatialResolution resolution = S2SpatialResolution.R10M;
 
-    @Override
-    public String getProductDirREGEX() {
-        return PRODUCT_REGEX;
-    }
 
-    @Override
-    public String getProductXmlREGEX() {
-        return PRODUCT_XML_REGEX;
-    }
-
-    @Override
-    public String getGranuleDirREGEX() {
-        return GRANULE_REGEX;
-    }
-
-    @Override
-    public String getGranuleXmlREGEX() {
-        return GRANULE_XML_REGEX;
-    }
 
     @Override
     public boolean matches(String filename) {

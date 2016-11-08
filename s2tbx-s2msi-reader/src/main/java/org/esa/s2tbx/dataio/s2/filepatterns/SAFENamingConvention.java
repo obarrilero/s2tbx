@@ -21,6 +21,8 @@ public class SAFENamingConvention implements INamingConvention{
     public static String PRODUCT_XML_REGEX = "(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_R([0-9]{3}).*\\.xml";
     public static String GRANULE_REGEX = "(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_.*";
     public static String GRANULE_XML_REGEX = "(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_.*\\.xml";
+
+    //Templates level 1c
     public static String SPECTRAL_BAND_TEMPLATE_L1C = "IMG_DATA" + File.separator + "{{MISSION_ID}}_OPER_MSI_L1C_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_{{BANDFILEID}}.jp2";
 
     //Templates level 2a
@@ -45,25 +47,7 @@ public class SAFENamingConvention implements INamingConvention{
     private Path inputXmlPath = null;
     private S2SpatialResolution resolution = S2SpatialResolution.R10M;
 
-    @Override
-    public String getProductDirREGEX() {
-        return PRODUCT_REGEX;
-    }
 
-    @Override
-    public String getProductXmlREGEX() {
-        return PRODUCT_XML_REGEX;
-    }
-
-    @Override
-    public String getGranuleDirREGEX() {
-        return GRANULE_REGEX;
-    }
-
-    @Override
-    public String getGranuleXmlREGEX() {
-        return GRANULE_XML_REGEX;
-    }
 
     @Override
     public boolean matches(String filename) {

@@ -10,10 +10,6 @@ import java.util.Set;
  * Created by obarrile on 02/11/2016.
  */
 public interface INamingConvention {
-    public String getProductDirREGEX();
-    public String getProductXmlREGEX();
-    public String getGranuleDirREGEX();
-    public String getGranuleXmlREGEX();
     public boolean matches(String filename);
     public boolean hasValidStructure();
     public Path getXmlFromDir(Path path);

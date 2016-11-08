@@ -13,6 +13,11 @@ public class NamingConventionFactory {
     //todo return array if more than one is possible??
     public static INamingConvention createNamingConvention(Path path)  {
 
+        L1BNamingConvention l1bConvention = new L1BNamingConvention(path);
+        if(l1bConvention.getInputType() != null){
+            return l1bConvention;
+        }
+
         SAFENamingConvention safe = new SAFENamingConvention(path);
         if(safe.getInputType() != null){
             return safe;
@@ -121,10 +126,6 @@ public class NamingConventionFactory {
         }
         return null;
     }
-
-
-
-
 
 
 

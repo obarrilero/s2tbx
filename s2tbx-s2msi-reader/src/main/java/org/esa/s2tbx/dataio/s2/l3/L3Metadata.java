@@ -52,7 +52,7 @@ public class L3Metadata extends S2Metadata {
         }
 
         //add band information (at the end because we need to read the metadata to know the maximum index of mosaic)
-        List<S2BandInformation> bandInfoList = L3MetadataProc.getBandInformationList(path, productResolution, getProductCharacteristics().getQuantificationValue(), maxIndex);
+        List<S2BandInformation> bandInfoList = L3MetadataProc.getBandInformationList(getFormat(), productResolution, getProductCharacteristics().getQuantificationValue(), maxIndex);
         int size = bandInfoList.size();
         getProductCharacteristics().setBandInformations(bandInfoList.toArray(new S2BandInformation[size]));
 
@@ -60,6 +60,8 @@ public class L3Metadata extends S2Metadata {
 
     private int initProduct(Path path, String granuleName, String epsg, S2SpatialResolution productResolution) throws IOException, ParserConfigurationException, SAXException {
         IL3ProductMetadata metadataProduct = L3MetadataFactory.createL3ProductMetadata(path);
+
+        setFormat(metadataProduct.getFormat());
         setProductCharacteristics(metadataProduct.getProductOrganization(path, productResolution));
 
         Collection<String> tileNames = null;
@@ -127,6 +129,10 @@ public class L3Metadata extends S2Metadata {
     private int initTile(Path path, String epsg, S2SpatialResolution resolution) throws IOException, ParserConfigurationException, SAXException {
 
         IL3GranuleMetadata granuleMetadata = L3MetadataFactory.createL3GranuleMetadata(path);
+
+        if(getFormat() == null) {
+            setFormat(granuleMetadata.getFormat());
+        }
 
         if(getProductCharacteristics() == null) {
             setProductCharacteristics(granuleMetadata.getTileProductOrganization(path, resolution));

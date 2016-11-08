@@ -74,6 +74,7 @@ public class L1cMetadata extends S2Metadata {
 
     private void initProduct(Path path, String granuleName, String epsg) throws IOException, ParserConfigurationException, SAXException {
         IL1cProductMetadata metadataProduct = L1cMetadataFactory.createL1cProductMetadata(path);
+        setFormat(metadataProduct.getFormat());
         setProductCharacteristics(metadataProduct.getProductOrganization(path));
 
         Collection<String> tileNames = null;
@@ -111,9 +112,6 @@ public class L1cMetadata extends S2Metadata {
         ArrayList<Path> granulePaths = S2ProductNamingManager.getTilesFromProductXml(path);
         ArrayList<Path> granuleMetadataPathList = new ArrayList<>();
         for (String tileName : tileNames) {
-            Collection<String> images = metadataProduct.getImagesFromTile(tileName);
-            //TODO ransformar en full paths
-            tileImages.put(tileName,images);
             S2ProductNamingManager.getTileIdFromString(tileName);
             String tileId = S2ProductNamingManager.getTileIdFromString(tileName);
             if(tileId == null) {
@@ -156,6 +154,9 @@ public class L1cMetadata extends S2Metadata {
 
         IL1cGranuleMetadata granuleMetadata = L1cMetadataFactory.createL1cGranuleMetadata(path);
 
+        if(getFormat() == null) {
+            setFormat(granuleMetadata.getFormat());
+        }
         if(getProductCharacteristics() == null) {
             setProductCharacteristics(granuleMetadata.getTileProductOrganization(path));
         }

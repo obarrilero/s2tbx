@@ -71,6 +71,8 @@ public class L2aMetadata extends S2Metadata {
 
     private void initProduct(Path path, String granuleName, String epsg, S2SpatialResolution productResolution) throws IOException, ParserConfigurationException, SAXException {
         IL2aProductMetadata metadataProduct = L2aMetadataFactory.createL2aProductMetadata(path);
+
+        setFormat(metadataProduct.getFormat());
         setProductCharacteristics(metadataProduct.getProductOrganization(path, productResolution));
 
         Collection<String> tileNames = null;
@@ -135,6 +137,9 @@ public class L2aMetadata extends S2Metadata {
 
         IL2aGranuleMetadata granuleMetadata = L2aMetadataFactory.createL2aGranuleMetadata(path);
 
+        if(getFormat() == null) {
+            setFormat(granuleMetadata.getFormat());
+        }
         if(getProductCharacteristics() == null) {
             setProductCharacteristics(granuleMetadata.getTileProductOrganization(path, resolution));
         }

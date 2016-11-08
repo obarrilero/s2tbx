@@ -7,6 +7,7 @@ import org.esa.s2tbx.dataio.metadata.XmlMetadataParser;
 import org.esa.s2tbx.dataio.s2.S2BandInformation;
 import org.esa.s2tbx.dataio.s2.S2Metadata;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
+import org.esa.s2tbx.dataio.s2.filepatterns.NamingConventionFactory;
 import org.esa.s2tbx.dataio.s2.filepatterns.SAFECOMPACTNamingConvention;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.xml.sax.SAXException;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +32,8 @@ import java.util.regex.Pattern;
  */
 
 public class L2aGranuleMetadataPSD13 extends GenericXmlMetadata implements IL2aGranuleMetadata {
+
+    String format = null;
 
     private static class L2aGranuleMetadataPSD13Parser extends XmlMetadataParser<L2aGranuleMetadataPSD13> {
 
@@ -55,6 +59,7 @@ public class L2aGranuleMetadataPSD13 extends GenericXmlMetadata implements IL2aG
                 L2aGranuleMetadataPSD13Parser parser = new L2aGranuleMetadataPSD13Parser(L2aGranuleMetadataPSD13.class);
                 result = parser.parse(stream);
                 result.updateName();
+                result.format = NamingConventionFactory.getGranuleFormat(path);
             }
         } finally {
             IOUtils.closeQuietly(stream);
@@ -118,7 +123,7 @@ public class L2aGranuleMetadataPSD13 extends GenericXmlMetadata implements IL2aG
         double aotQuantification = L2aPSD13Constants.DEFAULT_AOT_QUANTIFICATION;
         double wvpQuantification = L2aPSD13Constants.DEFAULT_WVP_QUANTIFICATION;
 
-        List<S2BandInformation> aInfo = L2aMetadataProc.getBandInformationList(path, resolution,boaQuantification,aotQuantification,wvpQuantification);
+        List<S2BandInformation> aInfo = L2aMetadataProc.getBandInformationList(getFormat(), resolution,boaQuantification,aotQuantification,wvpQuantification);
         int size = aInfo.size();
         characteristics.setBandInformations(aInfo.toArray(new S2BandInformation[size]));
 
@@ -198,8 +203,14 @@ public class L2aGranuleMetadataPSD13 extends GenericXmlMetadata implements IL2aG
             return null;
         }
         for (String maskFilename : maskFilenames) {
+            //To be sure that it is not a relative path and finish with .gml
+            String filenameProcessed = Paths.get(maskFilename).getFileName().toString();
+            if(!filenameProcessed.endsWith(".gml")) {
+                filenameProcessed = filenameProcessed + ".gml";
+            }
+
             Path QIData = path.resolveSibling("QI_DATA");
-            File GmlData = new File(QIData.toFile(), maskFilename);
+            File GmlData = new File(QIData.toFile(), filenameProcessed);
 
             aMaskList.add(new S2Metadata.MaskFilename(getAttributeSiblingValue(L2aPSD13Constants.PATH_GRANULE_METADATA_MASK_FILENAME, maskFilename,
                                                                                 L2aPSD13Constants.PATH_GRANULE_METADATA_MASK_BAND, null),
@@ -220,6 +231,11 @@ public class L2aGranuleMetadataPSD13 extends GenericXmlMetadata implements IL2aG
     public MetadataElement getSimplifiedMetadataElement() {
         //TODO ? new parse? or clone rootElement and remove some elements?
         return rootElement;
+    }
+
+    @Override
+    public String getFormat() {
+        return format;
     }
 
     private void updateName() {

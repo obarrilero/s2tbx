@@ -6,6 +6,7 @@ import org.esa.s2tbx.dataio.metadata.GenericXmlMetadata;
 import org.esa.s2tbx.dataio.metadata.XmlMetadataParser;
 import org.esa.s2tbx.dataio.s2.S2Metadata;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
+import org.esa.s2tbx.dataio.s2.filepatterns.NamingConventionFactory;
 import org.esa.s2tbx.dataio.s2.filepatterns.SAFECOMPACTNamingConvention;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.xml.sax.SAXException;
@@ -26,6 +27,8 @@ import java.util.regex.Pattern;
  * Created by obarrile on 07/10/2016.
  */
 public class L3GranuleMetadataPSD13 extends GenericXmlMetadata implements IL3GranuleMetadata  {
+
+   String format = null;
 
     private static class L3GranuleMetadataPSD13Parser extends XmlMetadataParser<L3GranuleMetadataPSD13> {
 
@@ -51,6 +54,7 @@ public class L3GranuleMetadataPSD13 extends GenericXmlMetadata implements IL3Gra
                 L3GranuleMetadataPSD13Parser parser = new L3GranuleMetadataPSD13Parser(L3GranuleMetadataPSD13.class);
                 result = parser.parse(stream);
                 result.updateName();
+                result.format = NamingConventionFactory.getGranuleFormat(path);
             }
         } finally {
             IOUtils.closeQuietly(stream);
@@ -75,7 +79,7 @@ public class L3GranuleMetadataPSD13 extends GenericXmlMetadata implements IL3Gra
     public S2Metadata.ProductCharacteristics getTileProductOrganization(Path path, S2SpatialResolution resolution) {
 
         S2Metadata.ProductCharacteristics characteristics = new S2Metadata.ProductCharacteristics();
-        //DatatakeSensingStart is not in the metadata, but it is needed for the image templates. We read it from the file system
+        //DatatakeSensingStart is not in the metadata, but is it needed for the image templates in level3??. We read it from the file system
         //TODO review
         Path folder = path.resolveSibling("IMG_DATA");
         Pattern pattern = Pattern.compile(SAFECOMPACTNamingConvention.SPECTRAL_BAND_REGEX);
@@ -196,6 +200,11 @@ public class L3GranuleMetadataPSD13 extends GenericXmlMetadata implements IL3Gra
             if (aux > maxIndex) maxIndex = aux;
         }
         return maxIndex;
+    }
+
+    @Override
+    public String getFormat() {
+        return format;
     }
 
     private void updateName() {

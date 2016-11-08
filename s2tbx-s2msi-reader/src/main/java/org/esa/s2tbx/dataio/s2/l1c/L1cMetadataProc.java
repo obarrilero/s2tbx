@@ -35,7 +35,7 @@ public class L1cMetadataProc extends S2OrthoMetadataProc {
         return new S2SpectralInformation(
                 bandConstant.getPhysicalName(),
                 resolution,
-                NamingConventionFactory.getSpectralBandImageTemplate(format,bandConstant.getFilenameBandId()),
+                NamingConventionFactory.getSpectralBandImageTemplate_L1c(format,bandConstant.getFilenameBandId()),
                 //makeSpectralBandImageFileTemplate(path, bandConstant.getFilenameBandId()),
                 "Reflectance in band " + bandConstant.getPhysicalName(),
                 "dl",

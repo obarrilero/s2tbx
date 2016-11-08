@@ -26,15 +26,19 @@ public class NamingConventionFactory {
         return null;
     }
 
-    public static String getSpectralBandImageTemplate (String format, String bandFileId) {
+
+    //getters L1C templates
+    public static String getSpectralBandImageTemplate_L1c (String format, String bandFileId) {
         if(format.equals("SAFE")) {
-            return SAFENamingConvention.SPECTRAL_BAND_TEMPLATE.replace("{{BANDFILEID}}",bandFileId);
+            return SAFENamingConvention.SPECTRAL_BAND_TEMPLATE_L1C.replace("{{BANDFILEID}}",bandFileId);
         } else if (format.equals("SAFE_COMPACT")) {
-            return SAFECOMPACTNamingConvention.SPECTRAL_BAND_TEMPLATE.replace("{{BANDFILEID}}",bandFileId);
+            return SAFECOMPACTNamingConvention.SPECTRAL_BAND_TEMPLATE_L1C.replace("{{BANDFILEID}}",bandFileId);
         }
         return null;
     }
 
+
+    //getters L2A templates
     public static String getSpectralBandImageTemplate_L2a (String format, String bandFileId) {
         if(format.equals("SAFE")) {
             return SAFENamingConvention.SPECTRAL_BAND_TEMPLATE_L2A.replace("{{BANDFILEID}}",bandFileId);
@@ -43,7 +47,6 @@ public class NamingConventionFactory {
         }
         return null;
     }
-
     public static String getAOTTemplate_L2a (String format) {
         if(format.equals("SAFE")) {
             return SAFENamingConvention.AOT_FILE_TEMPLATE_L2A;
@@ -52,7 +55,6 @@ public class NamingConventionFactory {
         }
         return null;
     }
-
     public static String getWVPTemplate_L2a (String format) {
         if(format.equals("SAFE")) {
             return SAFENamingConvention.WVP_FILE_TEMPLATE_L2A;
@@ -61,7 +63,6 @@ public class NamingConventionFactory {
         }
         return null;
     }
-
     public static String getSCLTemplate_L2a (String format) {
         if(format.equals("SAFE")) {
             return SAFENamingConvention.SCL_FILE_TEMPLATE_L2A;
@@ -70,7 +71,6 @@ public class NamingConventionFactory {
         }
         return null;
     }
-
     public static String getCLDTemplate_L2a (String format) {
         if(format.equals("SAFE")) {
             return SAFENamingConvention.CLD_FILE_TEMPLATE_L2A;
@@ -79,7 +79,6 @@ public class NamingConventionFactory {
         }
         return null;
     }
-
     public static String getSNWTemplate_L2a (String format) {
         if(format.equals("SAFE")) {
             return SAFENamingConvention.SNW_FILE_TEMPLATE_L2A;
@@ -88,7 +87,6 @@ public class NamingConventionFactory {
         }
         return null;
     }
-
     public static String getDDVTemplate_L2a (String format) {
         if(format.equals("SAFE")) {
             return SAFENamingConvention.DDV_FILE_TEMPLATE_L2A;
@@ -97,6 +95,37 @@ public class NamingConventionFactory {
         }
         return null;
     }
+
+    //getters level3 templates
+    public static String getSpectralBandImageTemplate_L3 (String format, String bandFileId) {
+        if(format.equals("SAFE")) {
+            return SAFENamingConvention.SPECTRAL_BAND_TEMPLATE_L3.replace("{{BANDFILEID}}",bandFileId);
+        } else if (format.equals("SAFE_COMPACT")) {
+            return SAFECOMPACTNamingConvention.SPECTRAL_BAND_TEMPLATE_L3.replace("{{BANDFILEID}}",bandFileId);
+        }
+        return null;
+    }
+    public static String getSCLTemplate_L3 (String format) {
+        if(format.equals("SAFE")) {
+            return SAFENamingConvention.SCL_FILE_TEMPLATE_L3;
+        } else if (format.equals("SAFE_COMPACT")) {
+            return SAFECOMPACTNamingConvention.SCL_FILE_TEMPLATE_L3;
+        }
+        return null;
+    }
+    public static String getMSCTemplate_L3 (String format) {
+        if(format.equals("SAFE")) {
+            return SAFENamingConvention.MSC_FILE_TEMPLATE_L3;
+        } else if (format.equals("SAFE_COMPACT")) {
+            return SAFECOMPACTNamingConvention.MSC_FILE_TEMPLATE_L3;
+        }
+        return null;
+    }
+
+
+
+
+
 
 
     public static String getGranuleFormat (Path path) {

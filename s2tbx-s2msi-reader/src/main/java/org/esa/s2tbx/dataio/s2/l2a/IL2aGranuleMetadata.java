@@ -26,4 +26,6 @@ public interface IL2aGranuleMetadata {
 
     MetadataElement getMetadataElement();
     MetadataElement getSimplifiedMetadataElement();
+
+    String getFormat();
 }

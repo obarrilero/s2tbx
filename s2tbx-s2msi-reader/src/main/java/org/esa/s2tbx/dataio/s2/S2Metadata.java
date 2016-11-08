@@ -58,6 +58,7 @@ import java.util.regex.Pattern;
 public abstract class S2Metadata {
 
     private List<MetadataElement> metadataElements;
+    String format = null;
 
     private List<Tile> tileList;
 
@@ -72,7 +73,7 @@ public abstract class S2Metadata {
     protected HashMap<String, Path> resourceResolver;
 
     //Image filename without extension in each tile
-    protected HashMap<String, Collection<String>> tileImages;
+    //protected HashMap<String, Collection<String>> tileImages;
 
 
     /*public S2Metadata(S2Config config, JAXBContext context, String psdString) throws JAXBException {
@@ -87,7 +88,15 @@ public abstract class S2Metadata {
         this.config = config;
         this.metadataElements = new ArrayList<>();
         this.resourceResolver = new HashMap<>();
-        this.tileImages = new HashMap<>();
+        //this.tileImages = new HashMap<>();
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
     }
 
     public S2Config getConfig() {

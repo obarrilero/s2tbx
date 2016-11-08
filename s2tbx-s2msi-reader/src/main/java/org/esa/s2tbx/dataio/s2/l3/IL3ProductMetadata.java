@@ -18,4 +18,5 @@ public interface IL3ProductMetadata {
     S2DatastripFilename getDatastrip();
     S2DatastripDirFilename getDatastripDir();
     MetadataElement getMetadataElement();
+    String getFormat();
 }

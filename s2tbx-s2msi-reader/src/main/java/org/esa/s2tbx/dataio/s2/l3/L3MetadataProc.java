@@ -6,6 +6,7 @@ import org.esa.s2tbx.dataio.s2.S2IndexBandInformation;
 import org.esa.s2tbx.dataio.s2.S2ProductNamingManager;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
 import org.esa.s2tbx.dataio.s2.S2SpectralInformation;
+import org.esa.s2tbx.dataio.s2.filepatterns.NamingConventionFactory;
 import org.esa.s2tbx.dataio.s2.ortho.S2OrthoMetadataProc;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.util.SystemUtils;
@@ -31,11 +32,11 @@ public class L3MetadataProc extends S2OrthoMetadataProc {
     private static String paletteRelativePath = "color_palettes";
     private static String paletteSpectrum = "spectrum.cpd";
 
-    private static S2SpectralInformation makeSpectralInformation(Path path, S2BandConstants bandConstant, S2SpatialResolution resolution, double quantification) {
+    private static S2SpectralInformation makeSpectralInformation(String format, S2BandConstants bandConstant, S2SpatialResolution resolution, double quantification) {
         return new S2SpectralInformation(
                 bandConstant.getPhysicalName(),
                 resolution,
-                makeSpectralBandImageFileTemplate(path, bandConstant.getFilenameBandId()),
+                NamingConventionFactory.getSpectralBandImageTemplate_L3(format, bandConstant.getFilenameBandId()),
                 "Reflectance in band " + bandConstant.getPhysicalName(),
                 "dl",
                 quantification,
@@ -45,75 +46,75 @@ public class L3MetadataProc extends S2OrthoMetadataProc {
                 bandConstant.getWavelengthCentral());
     }
 
-    public static List<S2BandInformation> getBandInformationList (Path path, S2SpatialResolution resolution, double boaQuantification, int indexMax) {
+    public static List<S2BandInformation> getBandInformationList (String format, S2SpatialResolution resolution, double boaQuantification, int indexMax) {
         List<S2BandInformation> aInfo = new ArrayList<>();
         switch (resolution) {
             case R10M:
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B2, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B3, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B4, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B5, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B6, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B7, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B8, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B8A, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B2, S2SpatialResolution.R10M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B3, S2SpatialResolution.R10M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B4, S2SpatialResolution.R10M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B5, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B6, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B7, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B8, S2SpatialResolution.R10M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B8A, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
                 //aInfo.add(makeSpectralInformation(S2BandConstants.B10, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B11, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B12, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B11, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B12, S2SpatialResolution.R20M, boaQuantification));
 
-                aInfo.add(makeMSCInformation(path, S2SpatialResolution.R10M, indexMax));
-                aInfo.add(makeMSCInformation(path, S2SpatialResolution.R20M, indexMax));
-                aInfo.add(makeMSCInformation(path, S2SpatialResolution.R60M, indexMax));
-                aInfo.add(makeSCLInformation(path, S2SpatialResolution.R10M));
-                aInfo.add(makeSCLInformation(path, S2SpatialResolution.R20M));
-                aInfo.add(makeSCLInformation(path, S2SpatialResolution.R60M));
+                aInfo.add(makeMSCInformation(format, S2SpatialResolution.R10M, indexMax));
+                aInfo.add(makeMSCInformation(format, S2SpatialResolution.R20M, indexMax));
+                aInfo.add(makeMSCInformation(format, S2SpatialResolution.R60M, indexMax));
+                aInfo.add(makeSCLInformation(format, S2SpatialResolution.R10M));
+                aInfo.add(makeSCLInformation(format, S2SpatialResolution.R20M));
+                aInfo.add(makeSCLInformation(format, S2SpatialResolution.R60M));
                 break;
             case R20M:
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B2, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B3, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B4, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B5, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B6, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B7, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B2, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B3, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B4, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B5, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B6, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B7, S2SpatialResolution.R20M, boaQuantification));
                 //aInfo.add(makeSpectralInformation(S2BandConstants.B8, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B8A, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B8A, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
                 //aInfo.add(makeSpectralInformation(S2BandConstants.B10, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B11, S2SpatialResolution.R20M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B12, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B11, S2SpatialResolution.R20M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B12, S2SpatialResolution.R20M, boaQuantification));
 
-                aInfo.add(makeMSCInformation(path, S2SpatialResolution.R20M, indexMax));
-                aInfo.add(makeMSCInformation(path, S2SpatialResolution.R60M, indexMax));
-                aInfo.add(makeSCLInformation(path, S2SpatialResolution.R20M));
-                aInfo.add(makeSCLInformation(path, S2SpatialResolution.R60M));
+                aInfo.add(makeMSCInformation(format, S2SpatialResolution.R20M, indexMax));
+                aInfo.add(makeMSCInformation(format, S2SpatialResolution.R60M, indexMax));
+                aInfo.add(makeSCLInformation(format, S2SpatialResolution.R20M));
+                aInfo.add(makeSCLInformation(format, S2SpatialResolution.R60M));
                 break;
             case R60M:
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B2, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B3, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B4, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B5, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B6, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B7, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B1, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B2, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B3, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B4, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B5, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B6, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B7, S2SpatialResolution.R60M, boaQuantification));
                 //aInfo.add(makeSpectralInformation(S2BandConstants.B8, S2SpatialResolution.R10M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B8A, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B8A, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B9, S2SpatialResolution.R60M, boaQuantification));
                 //aInfo.add(makeSpectralInformation(S2BandConstants.B10, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B11, S2SpatialResolution.R60M, boaQuantification));
-                aInfo.add(makeSpectralInformation(path, S2BandConstants.B12, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B11, S2SpatialResolution.R60M, boaQuantification));
+                aInfo.add(makeSpectralInformation(format, S2BandConstants.B12, S2SpatialResolution.R60M, boaQuantification));
 
-                aInfo.add(makeMSCInformation(path, S2SpatialResolution.R60M, indexMax));
-                aInfo.add(makeSCLInformation(path, S2SpatialResolution.R60M));
+                aInfo.add(makeMSCInformation(format, S2SpatialResolution.R60M, indexMax));
+                aInfo.add(makeSCLInformation(format, S2SpatialResolution.R60M));
                 break;
         }
         return aInfo;
     }
 
 
-    private static S2BandInformation makeSCLInformation(Path path, S2SpatialResolution resolution) {
+    private static S2BandInformation makeSCLInformation(String format, S2SpatialResolution resolution) {
         List<S2IndexBandInformation.S2IndexBandIndex> indexList = new ArrayList<>();
         /* Using the same colors as in the L2A-PDD */
         indexList.add(S2IndexBandInformation.makeIndex(0, new Color(0, 0, 0), "NODATA", "No data"));
@@ -129,10 +130,10 @@ public class L3MetadataProc extends S2OrthoMetadataProc {
         indexList.add(S2IndexBandInformation.makeIndex(10, new Color(100, 200, 255), "THIN_CIRRUS", "Thin cirrus"));
         indexList.add(S2IndexBandInformation.makeIndex(11, new Color(255, 150, 255), "SNOW_ICE", "Snow or Ice"));
         indexList.add(S2IndexBandInformation.makeIndex(12, new Color(255, 127, 39), "URBAN_AREAS", "Urban areas"));
-        return new S2IndexBandInformation("quality_scene_classification_" + resolution.resolution + "m", resolution, makeSCLFileTemplate(path), "Scene classification", "", indexList, "scl_" + resolution.resolution + "m_");
+        return new S2IndexBandInformation("quality_scene_classification_" + resolution.resolution + "m", resolution, NamingConventionFactory.getSCLTemplate_L3(format), "Scene classification", "", indexList, "scl_" + resolution.resolution + "m_");
     }
 
-    public static S2BandInformation makeMSCInformation(Path path, S2SpatialResolution resolution, int indexMax) {
+    public static S2BandInformation makeMSCInformation(String format, S2SpatialResolution resolution, int indexMax) {
         List<S2IndexBandInformation.S2IndexBandIndex> indexList = new ArrayList<>();
 
         if(indexMax > 0) {
@@ -161,7 +162,7 @@ public class L3MetadataProc extends S2OrthoMetadataProc {
 
                     indexList.add(S2IndexBandInformation.makeIndex(i, new Color(red, green, blue), String.valueOf(i), String.valueOf(i)));
                 }
-                return new S2IndexBandInformation(MOSAIC_BAND_NAME + "_" + resolution.resolution + "m", resolution, makeMSCFileTemplate(path), "Pixel count", "", indexList, "msc_" + resolution.resolution + "m_");
+                return new S2IndexBandInformation(MOSAIC_BAND_NAME + "_" + resolution.resolution + "m", resolution, NamingConventionFactory.getMSCTemplate_L3(format), "Pixel count", "", indexList, "msc_" + resolution.resolution + "m_");
 
             } catch (IOException e) {
 
@@ -176,11 +177,11 @@ public class L3MetadataProc extends S2OrthoMetadataProc {
             if (f < 0) f++;
             indexList.add(S2IndexBandInformation.makeIndex(i, getHSBColor(f, (float)1.0, (float)1.0),  String.valueOf(i), String.valueOf(i)));
         }
-        return new S2IndexBandInformation(MOSAIC_BAND_NAME + "_" + resolution.resolution + "m", resolution, makeMSCFileTemplate(path), "Pixel count", "", indexList, "msc_" + resolution.resolution + "m_");
+        return new S2IndexBandInformation(MOSAIC_BAND_NAME + "_" + resolution.resolution + "m", resolution, NamingConventionFactory.getMSCTemplate_L3(format), "Pixel count", "", indexList, "msc_" + resolution.resolution + "m_");
 
     }
 
-    private static String makeSCLFileTemplate(Path path) {
+  /*  private static String makeSCLFileTemplate(Path path) {
         String sample = null;
         Path imagesPath = null;
         String[] images = null;
@@ -205,9 +206,9 @@ public class L3MetadataProc extends S2OrthoMetadataProc {
             return sample;
         }
         return String.format("QI_DATA%s{{MISSION_ID}}_USER_SCL_L03_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_{{RESOLUTION}}m.jp2", File.separator);
-    }
+    }*/
 
-    private static String makeMSCFileTemplate(Path path) {
+   /* private static String makeMSCFileTemplate(Path path) {
         String sample = null;
         Path imagesPath = null;
         String[] images = null;
@@ -233,17 +234,16 @@ public class L3MetadataProc extends S2OrthoMetadataProc {
         }
 
         return String.format("QI_DATA%s{{MISSION_ID}}_USER_MSC_L03_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_{{RESOLUTION}}m.jp2", File.separator);
-    }
+    }*/
 
-    private static String makeSpectralBandImageFileTemplate(Path path, String bandFileId) {
-        /* Sample :
-        MISSION_ID : S2A
-        SITECENTRE : MTI_
-        CREATIONDATE : 20150813T201603
-        ABSOLUTEORBIT : A000734
-        TILENUMBER : T32TQR
-        RESOLUTION : 10 | 20 | 60
-         */
+   /* private static String makeSpectralBandImageFileTemplate(Path path, String bandFileId) {
+        //Sample :
+        //MISSION_ID : S2A
+        //SITECENTRE : MTI_
+        //CREATIONDATE : 20150813T201603
+        //ABSOLUTEORBIT : A000734
+        //TILENUMBER : T32TQR
+        //RESOLUTION : 10 | 20 | 60
 
         String sample = null;
         Path imagesPath = null;
@@ -283,7 +283,7 @@ public class L3MetadataProc extends S2OrthoMetadataProc {
         }
         return String.format("IMG_DATA%sR{{RESOLUTION}}m%s{{MISSION_ID}}_USER_MSI_L03_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_%s_{{RESOLUTION}}m.jp2",
                              File.separator, File.separator, bandFileId);
-    }
+    }*/
 
 
 

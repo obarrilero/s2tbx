@@ -28,4 +28,6 @@ public interface IL3GranuleMetadata {
     MetadataElement getSimplifiedMetadataElement();
 
     int getMaximumMosaicIndex();
+
+    String getFormat();
 }

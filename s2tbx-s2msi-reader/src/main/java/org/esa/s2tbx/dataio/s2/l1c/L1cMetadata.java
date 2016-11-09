@@ -20,24 +20,16 @@ package org.esa.s2tbx.dataio.s2.l1c;
 
 import org.esa.s2tbx.dataio.s2.S2Config;
 import org.esa.s2tbx.dataio.s2.S2Metadata;
-import org.esa.s2tbx.dataio.s2.S2ProductNamingManager;
+import org.esa.s2tbx.dataio.s2.S2ProductNamingUtils;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
-import org.esa.s2tbx.dataio.s2.filepatterns.S2DatastripDirFilename;
-import org.esa.s2tbx.dataio.s2.filepatterns.S2DatastripFilename;
-import org.esa.s2tbx.dataio.s2.ortho.filepatterns.S2OrthoGranuleDirFilename;
-import org.esa.s2tbx.dataio.s2.ortho.filepatterns.S2OrthoGranuleMetadataFilename;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.util.SystemUtils;
-import org.jdom.JDOMException;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -85,23 +77,20 @@ public class L1cMetadata extends S2Metadata {
             Collection<String> tileNamesAux = metadataProduct.getTiles();
 
             for(String tileNameAux : tileNamesAux) {
-                String auxTileId = S2ProductNamingManager.getTileIdFromString(tileNameAux);
-                if(auxTileId.equals(S2ProductNamingManager.getTileIdFromString(granuleName))) {
+                String auxTileId = S2ProductNamingUtils.getTileIdFromString(tileNameAux);
+                if(auxTileId.equals(S2ProductNamingUtils.getTileIdFromString(granuleName))) {
                     tileNames = Collections.singletonList(tileNameAux);
                     break;
                 }
             }
         }
 
-        //test getimages
-
-
         //add product metadata
         getMetadataElements().add(metadataProduct.getMetadataElement());
 
         //add datastrip metadatas
-        for(Path datastripFolder : S2ProductNamingManager.getDatastripsFromProductXml(path)) {
-            Path datastripPath = S2ProductNamingManager.getXmlFromDir(datastripFolder);
+        for(Path datastripFolder : S2ProductNamingUtils.getDatastripsFromProductXml(path)) {
+            Path datastripPath = S2ProductNamingUtils.getXmlFromDir(datastripFolder);
             if(datastripPath != null) {
                 IL1cDatastripMetadata metadataDatastrip = L1cMetadataFactory.createL1cDatastripMetadata(datastripPath);
                 getMetadataElements().add(metadataDatastrip.getMetadataElement());
@@ -109,20 +98,20 @@ public class L1cMetadata extends S2Metadata {
         }
 
 
-        ArrayList<Path> granulePaths = S2ProductNamingManager.getTilesFromProductXml(path);
+        ArrayList<Path> granulePaths = S2ProductNamingUtils.getTilesFromProductXml(path);
         ArrayList<Path> granuleMetadataPathList = new ArrayList<>();
         for (String tileName : tileNames) {
-            S2ProductNamingManager.getTileIdFromString(tileName);
-            String tileId = S2ProductNamingManager.getTileIdFromString(tileName);
+            S2ProductNamingUtils.getTileIdFromString(tileName);
+            String tileId = S2ProductNamingUtils.getTileIdFromString(tileName);
             if(tileId == null) {
                 continue;
             }
 
             for(Path granulePath : granulePaths) {
-                String tileIdAux = S2ProductNamingManager.getTileIdFromString(granulePath.getFileName().toString());
+                String tileIdAux = S2ProductNamingUtils.getTileIdFromString(granulePath.getFileName().toString());
                 if(tileId.equals(tileIdAux)) {
                     resourceResolver.put(tileName,granulePath);
-                    Path nestedGranuleMetadata = S2ProductNamingManager.getXmlFromDir(granulePath);
+                    Path nestedGranuleMetadata = S2ProductNamingUtils.getXmlFromDir(granulePath);
                     if(nestedGranuleMetadata != null) {
                         granuleMetadataPathList.add(nestedGranuleMetadata);
                         //TODO notificar algo si no lo encuentra

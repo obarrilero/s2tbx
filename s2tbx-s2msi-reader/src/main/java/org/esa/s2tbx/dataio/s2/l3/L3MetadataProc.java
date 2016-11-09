@@ -3,7 +3,6 @@ package org.esa.s2tbx.dataio.s2.l3;
 import org.esa.s2tbx.dataio.s2.S2BandConstants;
 import org.esa.s2tbx.dataio.s2.S2BandInformation;
 import org.esa.s2tbx.dataio.s2.S2IndexBandInformation;
-import org.esa.s2tbx.dataio.s2.S2ProductNamingManager;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
 import org.esa.s2tbx.dataio.s2.S2SpectralInformation;
 import org.esa.s2tbx.dataio.s2.filepatterns.NamingConventionFactory;
@@ -14,8 +13,6 @@ import org.esa.snap.core.util.SystemUtils;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -31,18 +31,14 @@ import org.esa.s2tbx.dataio.jp2.TileLayout;
 import org.esa.s2tbx.dataio.jp2.internal.JP2TileOpImage;
 import org.esa.s2tbx.dataio.openjpeg.StackTraceUtils;
 import org.esa.s2tbx.dataio.s2.*;
-import org.esa.s2tbx.dataio.s2.filepatterns.S2ProductFilename;
 import org.esa.s2tbx.dataio.s2.gml.EopPolygon;
 import org.esa.s2tbx.dataio.s2.masks.MaskInfo;
 import org.esa.s2tbx.dataio.s2.ortho.filepatterns.S2OrthoGranuleDirFilename;
-import org.esa.s2tbx.dataio.s2.ortho.filepatterns.S2OrthoGranuleMetadataFilename;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.datamodel.*;
-import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.image.SourceImageScaler;
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.core.util.io.FileUtils;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureImpl;
 import org.geotools.filter.identity.FeatureIdImpl;
@@ -128,7 +124,7 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
 
         Objects.requireNonNull(metadataFile);
 
-        boolean isAGranule = /*S2OrthoGranuleMetadataFilename.isGranuleFilename(metadataFile.getName())*/S2ProductNamingManager.checkStructureFromGranuleXml(metadataFile.toPath());
+        boolean isAGranule = /*S2OrthoGranuleMetadataFilename.isGranuleFilename(metadataFile.getName())*/S2ProductNamingUtils.checkStructureFromGranuleXml(metadataFile.toPath());
         boolean foundProductMetadata = true;
 
         if (isAGranule) {
@@ -153,18 +149,18 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
             granuleDirName = metadataFile.getParentFile().getName();
             try {
                 Objects.requireNonNull(metadataFile.getParentFile());
-                Objects.requireNonNull(metadataFile.getParentFile().getParentFile());
-                Objects.requireNonNull(metadataFile.getParentFile().getParentFile().getParentFile());
+                //Objects.requireNonNull(metadataFile.getParentFile().getParentFile());
+                //Objects.requireNonNull(metadataFile.getParentFile().getParentFile().getParentFile());
             } catch (NullPointerException npe) {
                 throw new IOException(String.format("Unable to retrieve the product associated to granule metadata file [%s]", metadataFile.getName()));
             }
 
-            File up2levels = metadataFile.getParentFile().getParentFile().getParentFile();
+            //File up2levels = metadataFile.getParentFile().getParentFile().getParentFile();
             File tileIdFilter = metadataFile.getParentFile();
 
             filterTileId = tileIdFilter.getName();
 
-            Path p = S2ProductNamingManager.getXmlFromDir(up2levels.toPath());
+            /*Path p = S2ProductNamingUtils.getXmlFromDir(up2levels.toPath());
             File f = null;
             if(p != null) {
                 f = p.toFile();
@@ -172,10 +168,15 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
             if (f != null) {
                 //for (File f : files) {
                     //TODO algo mas?????
-                    if (/*S2ProductFilename.isProductFilename*/S2ProductNamingManager.checkStructureFromProductXml(f.toPath()) /*&& S2ProductFilename.isMetadataFilename(f.getName())*/) {
+                    if (S2ProductNamingUtils.checkStructureFromProductXml(f.toPath())) {
                         rootMetaDataFile = f;
                     }
                // }
+            }*/
+
+            Path rootMetadataPath = namingConvention.getInputProductXml();
+            if(rootMetadataPath != null) {
+                rootMetaDataFile = rootMetadataPath.toFile();
             }
             if (rootMetaDataFile == null) {
                 foundProductMetadata = false;

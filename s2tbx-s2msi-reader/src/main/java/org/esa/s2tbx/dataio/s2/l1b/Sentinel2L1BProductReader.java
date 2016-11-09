@@ -71,6 +71,7 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -177,7 +178,7 @@ public class Sentinel2L1BProductReader extends Sentinel2ProductReader {
             throw new IOException("Invalid OpenJpeg executables");
         }
 
-        boolean isAGranule = /*S2L1BGranuleMetadataFilename.isGranuleFilename(metadataFile.getName())*/namingConvention.getInputType() == S2Config.Sentinel2InputType.INPUT_TYPE_GRANULE_METADATA;
+        boolean isAGranule = (namingConvention.getInputType() == S2Config.Sentinel2InputType.INPUT_TYPE_GRANULE_METADATA);
         boolean foundProductMetadata = true;
 
         if (isAGranule) {
@@ -199,30 +200,37 @@ public class Sentinel2L1BProductReader extends Sentinel2ProductReader {
             granuleDirName = metadataFile.getParentFile().getName();
             try {
                 Objects.requireNonNull(metadataFile.getParentFile());
-                Objects.requireNonNull(metadataFile.getParentFile().getParentFile());
-                Objects.requireNonNull(metadataFile.getParentFile().getParentFile().getParentFile());
-            } catch (NullPointerException npe) {
+                File tileIdFilter = metadataFile.getParentFile();
+                filterTileId = tileIdFilter.getName();
+            }   catch (NullPointerException npe){
                 throw new IOException(String.format("Unable to retrieve the product associated to granule metadata file [%s]", metadataFile.getName()));
             }
+            /*try {
+                Objects.requireNonNull(metadataFile.getParentFile().getParentFile());
+                Objects.requireNonNull(metadataFile.getParentFile().getParentFile().getParentFile());
 
-            File up2levels = metadataFile.getParentFile().getParentFile().getParentFile();
-            File tileIdFilter = metadataFile.getParentFile();
+                File up2levels = metadataFile.getParentFile().getParentFile().getParentFile();
 
-            filterTileId = tileIdFilter.getName();
-
-            File[] files = up2levels.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    if (S2ProductFilename.isProductFilename(f.getName()) && S2ProductFilename.isMetadataFilename(f.getName())) {
-                        productMetadataFile = f;
-                        break;
+                File[] files = up2levels.listFiles();
+                if (files != null) {
+                    for (File f : files) {
+                        if (namingConvention.matchesProductMetadata(f.getName())) {
+                            productMetadataFile = f;
+                            break;
+                        }
                     }
                 }
+            } catch (NullPointerException npe) {
+                //It is not thrown an exception because it is already possible to read the granule without the product metadata
+            }*/
+
+            Path rootMetadataPath = namingConvention.getInputProductXml();
+            if(rootMetadataPath != null) {
+                productMetadataFile = rootMetadataPath.toFile();
             }
             if (productMetadataFile == null) {
                 foundProductMetadata = false;
                 productMetadataFile = metadataFile;
-                //throw new IOException(String.format("Unable to retrieve the product associated to granule metadata file [%s]", metadataFile.getName()));
             }
         } else {
             productMetadataFile = metadataFile;
@@ -233,7 +241,7 @@ public class Sentinel2L1BProductReader extends Sentinel2ProductReader {
         L1bMetadata metadataHeader;
 
         try {
-            metadataHeader = parseHeader(productMetadataFile, granuleDirName, getConfig());
+            metadataHeader = parseHeader(productMetadataFile, granuleDirName, getConfig(),!foundProductMetadata, namingConvention);
         } catch (ParserConfigurationException | SAXException e) {
             SystemUtils.LOG.severe(Utils.getStackTrace(e));
             throw new IOException("Failed to parse metadata in " + productMetadataFile.getName());
@@ -269,19 +277,34 @@ public class Sentinel2L1BProductReader extends Sentinel2ProductReader {
         Map<String, L1BBandInfo> bandInfoByKey = new HashMap<>();
         if (productCharacteristics.getBandInformations() != null) {
             for (Tile tile : tileList) {
-                // TODO : rely on the imageFileTemplate hosted by the S2SpectralBandInformation instance.
                 S2L1BGranuleDirFilename gf = (S2L1BGranuleDirFilename) S2L1BGranuleDirFilename.create(tile.getId());
                 Guardian.assertNotNull("Product files don't match regular expressions", gf);
 
-                for (S2BandInformation bandInformation : productCharacteristics.getBandInformations()) {
-                    S2GranuleImageFilename granuleFileName = gf.getImageFilename(bandInformation.getPhysicalBand());
-                    String imgFilename = null;
-                    if(foundProductMetadata) {
-                        imgFilename = "GRANULE" + File.separator + tile.getId() + File.separator + "IMG_DATA" + File.separator + granuleFileName.name;
-                    } else {
-                        imgFilename = "IMG_DATA" + File.separator + granuleFileName.name;
-                    }
+                for(S2BandInformation bandInformation : productCharacteristics.getBandInformations()) {
+                    String imgFilename;
+                    if (foundProductMetadata) {
+                        imgFilename = String.format("GRANULE%s%s%s%s", File.separator, metadataHeader.resolveResource(tile.getId()).getFileName().toString(),
+                                                    File.separator,
+                                                    bandInformation.getImageFileTemplate()
+                                                            .replace("{{TILENUMBER}}", gf.getTileID())
+                                                            .replace("{{MISSION_ID}}", gf.missionID)
+                                                            .replace("{{SITECENTRE}}", gf.siteCentre)
+                                                            .replace("{{CREATIONDATE}}", gf.creationDate)
+                                                            .replace("{{STARTDATE}}", gf.startDate)
+                                                            .replace("{{DETECTOR}}", gf.detectorId)
+                                                            .replace("{{RESOLUTION}}", String.format("%d", bandInformation.getResolution().resolution)));
 
+                    } else {
+                        imgFilename = bandInformation.getImageFileTemplate()
+                                .replace("{{TILENUMBER}}", gf.getTileID())
+                                .replace("{{MISSION_ID}}", gf.missionID)
+                                .replace("{{SITECENTRE}}", gf.siteCentre)
+                                .replace("{{CREATIONDATE}}", gf.creationDate)
+                                .replace("{{STARTDATE}}", gf.startDate)
+                                .replace("{{DETECTOR}}", gf.detectorId)
+                                .replace("{{RESOLUTION}}", String.format("%d", bandInformation.getResolution().resolution));
+
+                    }
                     logger.finer("Adding file " + imgFilename + " to band: " + bandInformation.getPhysicalBand() + ", and detector: " + gf.getDetectorId());
 
                     File file = new File(productDir, imgFilename);
@@ -295,6 +318,7 @@ public class Sentinel2L1BProductReader extends Sentinel2ProductReader {
                     } else {
                         logger.warning(String.format("Warning: missing file %s\n", file));
                     }
+
                 }
             }
 
@@ -316,7 +340,7 @@ public class Sentinel2L1BProductReader extends Sentinel2ProductReader {
         Product product;
 
         if (sceneDescription != null) {
-            product = new Product(/*FileUtils.getFilenameWithoutExtension(productMetadataFile)*/namingConvention.getProductName(),
+            product = new Product(namingConvention.getProductName(),
                                   "S2_MSI_" + productCharacteristics.getProcessingLevel(),
                                   sceneDescription.getSceneRectangle().width,
                                   sceneDescription.getSceneRectangle().height);
@@ -350,16 +374,9 @@ public class Sentinel2L1BProductReader extends Sentinel2ProductReader {
                     resolutions.add(S2SpatialResolution.R60M);
                 }
 
-                /*for(BandInfo bandInfo : bandInfoByKey.values()) {
-                    if(!resolutions.contains(bandInfo.getBandInformation().getResolution())) {
-                        resolutions.add(bandInfo.getBandInformation().getResolution());
-                    }
-                }*/
                 addTileIndexes(product, resolutions, tileList, sceneDescription,sceneDimensions);
 
             }
-
-
 
         } else {
             product = new Product(FileUtils.getFilenameWithoutExtension(productMetadataFile),

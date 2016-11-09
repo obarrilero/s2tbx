@@ -10,7 +10,12 @@ import java.util.regex.Pattern;
  */
 public class NamingConventionFactory {
 
-    //todo return array if more than one is possible??
+    /**
+     * Checks the different NamingConventions and returns an instance to the first that matches().
+     * It is obtained by using exclusively the REGEX, the metadata file is not open to get the format.
+     * @param path
+     * @return appropriated naming convention or null
+     */
     public static INamingConvention createNamingConvention(Path path)  {
 
         L1BNamingConvention l1bConvention = new L1BNamingConvention(path);
@@ -31,6 +36,11 @@ public class NamingConventionFactory {
         return null;
     }
 
+    //getters L1B templates
+    public static String getSpectralBandImageTemplate_L1b (String format, String bandFileId) {
+        //Currently, it is always the same for all formats
+        return L1BNamingConvention.SPECTRAL_BAND_TEMPLATE_L1B.replace("{{BANDFILEID}}",bandFileId);
+    }
 
     //getters L1C templates
     public static String getSpectralBandImageTemplate_L1c (String format, String bandFileId) {
@@ -128,9 +138,15 @@ public class NamingConventionFactory {
     }
 
 
-
+    /**
+     * When reading a granule without an associated product metadata,
+     * it is not possible to get the format from the metadata content.
+     * This function is used in this case to get the format by using
+     * only the granule xml regex.
+     * @param path
+     * @return
+     */
     public static String getGranuleFormat (Path path) {
-
         String filename = path.getFileName().toString();
         Pattern pattern = Pattern.compile(SAFECOMPACTNamingConvention.GRANULE_XML_REGEX);
         Matcher matcher = pattern.matcher(filename);
@@ -143,7 +159,6 @@ public class NamingConventionFactory {
         if(matcher.matches()) {
             return "SAFE";
         }
-
         return null;
     }
     

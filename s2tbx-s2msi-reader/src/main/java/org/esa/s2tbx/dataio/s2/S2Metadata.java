@@ -64,31 +64,17 @@ public abstract class S2Metadata {
 
     private S2Config config;
 
-    //private Unmarshaller unmarshaller;
-
     private String psdString;
 
     private ProductCharacteristics productCharacteristics;
 
     protected HashMap<String, Path> resourceResolver;
 
-    //Image filename without extension in each tile
-    //protected HashMap<String, Collection<String>> tileImages;
-
-
-    /*public S2Metadata(S2Config config, JAXBContext context, String psdString) throws JAXBException {
-        this.config = config;
-        this.unmarshaller = context.createUnmarshaller();
-        this.psdString = psdString;
-        this.metadataElements = new ArrayList<>();
-        this.resourceResolver = new HashMap<>();
-    }*/
 
     public S2Metadata(S2Config config) {
         this.config = config;
         this.metadataElements = new ArrayList<>();
         this.resourceResolver = new HashMap<>();
-        //this.tileImages = new HashMap<>();
     }
 
     public String getFormat() {
@@ -140,12 +126,6 @@ public abstract class S2Metadata {
         return resourceResolver.get(identifier);
     }
 
-    /*protected Object updateAndUnmarshal(InputStream xmlStream) throws IOException, JAXBException {
-        InputStream updatedStream = changePSDIfRequired(xmlStream, psdString);
-        Object ob = unmarshaller.unmarshal(updatedStream);
-        return ((JAXBElement) ob).getValue();
-    }*/
-
     /**
      * from the input stream, replace the psd number in the header to allow jaxb to find
      * xsd files. This allows to open product with psd different from the reference one
@@ -172,11 +152,7 @@ public abstract class S2Metadata {
         return updatedXmlStream;
     }
 
-    /*protected MetadataElement parseAll(Element parent) {
-        return parseTree(parent, null, new HashSet<>(Arrays.asList("Viewing_Incidence_Angles_Grids", "Sun_Angles_Grid")));
-    }*/
-
-    protected MetadataElement parseTree(Element element, MetadataElement mdParent, Set<String> excludes) {
+   /* protected MetadataElement parseTree(Element element, MetadataElement mdParent, Set<String> excludes) {
 
         MetadataElement mdElement = new MetadataElement(element.getName());
 
@@ -210,7 +186,7 @@ public abstract class S2Metadata {
         }
 
         return mdElement;
-    }
+    }*/
 
 
     public static class Tile {

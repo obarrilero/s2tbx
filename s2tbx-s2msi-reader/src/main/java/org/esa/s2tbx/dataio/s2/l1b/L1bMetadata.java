@@ -20,6 +20,7 @@ package org.esa.s2tbx.dataio.s2.l1b;
 import org.esa.s2tbx.dataio.s2.S2Config;
 import org.esa.s2tbx.dataio.s2.S2Metadata;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
+import org.esa.s2tbx.dataio.s2.filepatterns.INamingConvention;
 import org.esa.s2tbx.dataio.s2.filepatterns.S2DatastripDirFilename;
 import org.esa.s2tbx.dataio.s2.filepatterns.S2DatastripFilename;
 import org.esa.s2tbx.dataio.s2.filepatterns.S2GranuleDirFilename;
@@ -48,25 +49,25 @@ import java.util.logging.Logger;
 public class L1bMetadata extends S2Metadata {
     protected Logger logger = SystemUtils.LOG;
 
-    public static L1bMetadata parseHeader(File file, String granuleName, S2Config config) throws IOException, ParserConfigurationException, SAXException {
-        return new L1bMetadata(file.toPath(), granuleName, config);
+    public static L1bMetadata parseHeader(File file, String granuleName, S2Config config, boolean isAGranule, INamingConvention namingConvention) throws IOException, ParserConfigurationException, SAXException {
+        return new L1bMetadata(file.toPath(), granuleName, config, isAGranule, namingConvention);
     }
 
-    private L1bMetadata(Path path, String granuleName, S2Config config) throws IOException, ParserConfigurationException, SAXException {
+    private L1bMetadata(Path path, String granuleName, S2Config config, boolean isAGranule, INamingConvention namingConvention) throws IOException, ParserConfigurationException, SAXException {
         super(config);
 
         resetTileList();
-        boolean isGranuleMetadata = S2L1BGranuleMetadataFilename.isGranuleFilename(path.getFileName().toString());
+        boolean isGranuleMetadata = /*S2L1BGranuleMetadataFilename.isGranuleFilename(path.getFileName().toString())*/isAGranule;
 
         if(!isGranuleMetadata) {
-            initProduct(path, granuleName);
+            initProduct(path, granuleName, namingConvention);
         } else {
-            initTile(path);
+            initTile(path, namingConvention);
         }
     }
 
 
-    private void initProduct(Path path, String granuleName) throws IOException, ParserConfigurationException, SAXException {
+    private void initProduct(Path path, String granuleName, INamingConvention namingConvention) throws IOException, ParserConfigurationException, SAXException {
 
         IL1bProductMetadata metadataProduct = L1bMetadataFactory.createL1bProductMetadata(path);
 
@@ -81,11 +82,13 @@ public class L1bMetadata extends S2Metadata {
         List<Path> fullTileNamesList = new ArrayList<>();
 
 
+
         for (String tileName : tileNames) {
             Path nestedMetadata = path.resolveSibling("GRANULE").resolve(tileName);
 
             if (Files.exists(nestedMetadata)) {
                 logger.log(Level.FINE, "File found: " + nestedMetadata);
+                resourceResolver.put(tileName,nestedMetadata);
                 S2GranuleDirFilename aGranuleDir = S2L1BGranuleDirFilename.create(tileName);
                 Guardian.assertNotNull("aGranuleDir", aGranuleDir);
                 String theName = aGranuleDir.getMetadataFilename().name;
@@ -102,21 +105,26 @@ public class L1bMetadata extends S2Metadata {
             }
         }
 
-        S2DatastripFilename stripName = metadataProduct.getDatastrip();
-        S2DatastripDirFilename dirStripName = metadataProduct.getDatastripDir();
-        Path datastripPath = path.resolveSibling("DATASTRIP").resolve(dirStripName.name).resolve(stripName.name);
-        IL1bDatastripMetadata metadataDatastrip = L1bMetadataFactory.createL1bDatastripMetadata(datastripPath);
-
         getMetadataElements().add(metadataProduct.getMetadataElement());
-        getMetadataElements().add(metadataDatastrip.getMetadataElement());
+
+        /*S2DatastripFilename stripName = metadataProduct.getDatastrip();
+        S2DatastripDirFilename dirStripName = metadataProduct.getDatastripDir();
+        Path datastripPath = path.resolveSibling("DATASTRIP").resolve(dirStripName.name).resolve(stripName.name);*/
+        for(Path datastripPath : namingConvention.getDatastripXmlPaths()) {
+            IL1bDatastripMetadata metadataDatastrip = L1bMetadataFactory.createL1bDatastripMetadata(datastripPath);
+            getMetadataElements().add(metadataDatastrip.getMetadataElement());
+        }
+
+
+
 
         //Init Tiles
         for (Path granuleMetadataPath : fullTileNamesList) {
-            initTile(granuleMetadataPath);
+            initTile(granuleMetadataPath, namingConvention);
         }
     }
 
-    private void initTile(Path path) throws IOException, ParserConfigurationException, SAXException {
+    private void initTile(Path path, INamingConvention namingConvention) throws IOException, ParserConfigurationException, SAXException {
         IL1bGranuleMetadata granuleMetadata = L1bMetadataFactory.createL1bGranuleMetadata(path);
 
         if(getProductCharacteristics() == null) {

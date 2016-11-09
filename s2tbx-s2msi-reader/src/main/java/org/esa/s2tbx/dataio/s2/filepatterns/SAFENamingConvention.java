@@ -1,7 +1,7 @@
 package org.esa.s2tbx.dataio.s2.filepatterns;
 
 import org.esa.s2tbx.dataio.s2.S2Config;
-import org.esa.s2tbx.dataio.s2.S2ProductNamingManager;
+import org.esa.s2tbx.dataio.s2.S2ProductNamingUtils;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
 import org.esa.s2tbx.dataio.s2.l2a.L2aUtils;
 import org.esa.snap.core.util.io.FileUtils;
@@ -9,7 +9,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -17,10 +17,49 @@ import java.util.regex.Pattern;
  * Created by obarrile on 02/11/2016.
  */
 public class SAFENamingConvention implements INamingConvention{
+
+    //REGEXs and getters
     public static String PRODUCT_REGEX = "(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_R([0-9]{3}).*";
     public static String PRODUCT_XML_REGEX = "(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_R([0-9]{3}).*\\.xml";
     public static String GRANULE_REGEX = "(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_.*";
     public static String GRANULE_XML_REGEX = "(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_.*\\.xml";
+    public static String DATASTRIP_REGEX = "(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})L1B([A-Z|0-9|_]{3})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_S([0-9]{8}T[0-9]{6})_N([0-9]{2})\\.([0-9]{2})";
+    public static String DATASTRIP_XML_REGEX = "(S2A|S2B|S2_)_([A-Z|0-9]{4})_([A-Z|0-9|_]{4})([A-Z|0-9|_]{6})_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_S([0-9]{8}T[0-9]{6})\\.xml";
+    @Override
+    public String[] getProductREGEXs() {
+        String[] REGEXs = {PRODUCT_REGEX};
+        return REGEXs;
+    }
+
+    @Override
+    public String[] getProductXmlREGEXs() {
+        String[] REGEXs = {PRODUCT_XML_REGEX};
+        return REGEXs;
+    }
+
+    @Override
+    public String[] getGranuleREGEXs() {
+        String[] REGEXs = {GRANULE_REGEX};
+        return REGEXs;
+    }
+
+    @Override
+    public String[] getGranuleXmlREGEXs() {
+        String[] REGEXs = {GRANULE_XML_REGEX};
+        return REGEXs;
+    }
+
+    @Override
+    public String[] getDatastripREGEXs() {
+        String[] REGEXs = {DATASTRIP_REGEX};
+        return REGEXs;
+    }
+
+    @Override
+    public String[] getDatastripXmlREGEXs() {
+        String[] REGEXs = {DATASTRIP_XML_REGEX};
+        return REGEXs;
+    }
 
     //Templates level 1c
     public static String SPECTRAL_BAND_TEMPLATE_L1C = "IMG_DATA" + File.separator + "{{MISSION_ID}}_OPER_MSI_L1C_TL_{{SITECENTRE}}_{{CREATIONDATE}}_{{ABSOLUTEORBIT}}_{{TILENUMBER}}_{{BANDFILEID}}.jp2";
@@ -45,74 +84,24 @@ public class SAFENamingConvention implements INamingConvention{
     private Set<String> epsgCodeList = null;
     private Path inputDirPath = null;
     private Path inputXmlPath = null;
+    private Path inputProductXml = null;
     private S2SpatialResolution resolution = S2SpatialResolution.R10M;
 
 
 
     @Override
     public boolean matches(String filename) {
-        Pattern pattern = Pattern.compile(PRODUCT_REGEX);
-        if (pattern.matcher(filename).matches()) {
-            return true;
-        }
-
-        pattern = Pattern.compile(PRODUCT_XML_REGEX);
-        if (pattern.matcher(filename).matches()) {
-            return true;
-        }
-
-        pattern = Pattern.compile(GRANULE_REGEX);
-        if (pattern.matcher(filename).matches()) {
-            return true;
-        }
-
-        pattern = Pattern.compile(GRANULE_XML_REGEX);
-        if (pattern.matcher(filename).matches()) {
-            return true;
-        }
-
-
-        return false;
+        return S2NamingConventionUtils.matches(filename,this);
     }
 
     @Override
     public boolean hasValidStructure() {
-        if(inputType == S2Config.Sentinel2InputType.INPUT_TYPE_PRODUCT_METADATA) {
-            return S2ProductNamingManager.checkStructureFromProductXml(getInputXml());
-        }
-        if(inputType == S2Config.Sentinel2InputType.INPUT_TYPE_GRANULE_METADATA) {
-            return S2ProductNamingManager.checkStructureFromGranuleXml(getInputXml());
-        }
-
-        return false;
+        return S2NamingConventionUtils.hasValidStructure(inputType, getInputXml());
     }
 
     @Override
     public Path getXmlFromDir(Path path) {
-
-        if(!Files.isDirectory(path)) {
-            return null;
-        }
-        Pattern productPattern = Pattern.compile(PRODUCT_XML_REGEX);
-        Pattern granulePattern = Pattern.compile(GRANULE_XML_REGEX);
-
-
-        String[] listXmlFiles = path.toFile().list((f, s) -> s.endsWith(".xml"));
-        String xmlFile = "";
-        int availableXmlCount = 0;
-
-        for(String xml : listXmlFiles) {
-            if (productPattern.matcher(xml).matches() || granulePattern.matcher(xml).matches()) {
-                xmlFile = xml;
-                availableXmlCount++;
-            }
-        }
-
-        if(availableXmlCount != 1) {
-            return null;
-        }
-
-        return path.resolve(xmlFile);
+        return S2NamingConventionUtils.getXmlFromDir(path, PRODUCT_XML_REGEX, GRANULE_XML_REGEX);
     }
 
     @Override
@@ -136,6 +125,11 @@ public class SAFENamingConvention implements INamingConvention{
     }
 
     @Override
+    public Path getInputProductXml() {
+        return inputProductXml;
+    }
+
+    @Override
     public S2SpatialResolution getResolution() {
         return resolution;
     }
@@ -143,6 +137,21 @@ public class SAFENamingConvention implements INamingConvention{
     @Override
     public String getProductName() {
         return FileUtils.getFilenameWithoutExtension(getInputXml().getFileName().toString());
+    }
+
+    @Override
+    public boolean matchesProductMetadata(String filename) {
+        return S2NamingConventionUtils.matches(filename, PRODUCT_XML_REGEX);
+    }
+
+    @Override
+    public ArrayList<Path> getDatastripXmlPaths() {
+        return S2NamingConventionUtils.getDatastripXmlPaths(inputType, getInputXml(), getDatastripREGEXs(), getDatastripXmlREGEXs());
+    }
+
+    @Override
+    public ArrayList<Path> getGranulesXmlPaths() {
+        return S2NamingConventionUtils.getGranulesXmlPaths(inputType, getInputXml(), getGranuleREGEXs(), getGranuleXmlREGEXs());
     }
 
     public SAFENamingConvention(Path input){
@@ -153,12 +162,14 @@ public class SAFENamingConvention implements INamingConvention{
             Pattern pattern = Pattern.compile(PRODUCT_REGEX);
             if (pattern.matcher(inputName).matches()) {
                 inputXmlPath = getXmlProductFromDir(input);
+                inputProductXml = inputXmlPath;
                 inputType = S2Config.Sentinel2InputType.INPUT_TYPE_PRODUCT_METADATA;
             }
             if(inputXmlPath == null) {
                 pattern = Pattern.compile(GRANULE_REGEX);
                 if (pattern.matcher(inputName).matches()) {
                     inputXmlPath = getXmlGranuleFromDir(input);
+                    inputProductXml = S2NamingConventionUtils.getProductXmlFromGranuleXml(inputXmlPath,getProductXmlREGEXs());
                     inputType = S2Config.Sentinel2InputType.INPUT_TYPE_GRANULE_METADATA;
                 }
             }
@@ -170,12 +181,14 @@ public class SAFENamingConvention implements INamingConvention{
             Pattern pattern = Pattern.compile(PRODUCT_XML_REGEX);
             if (pattern.matcher(inputName).matches()) {
                 inputXmlPath = input;
+                inputProductXml = inputXmlPath;
                 inputType = S2Config.Sentinel2InputType.INPUT_TYPE_PRODUCT_METADATA;
             }
             if(inputXmlPath == null) {
                 pattern = Pattern.compile(GRANULE_XML_REGEX);
                 if (pattern.matcher(inputName).matches()) {
                     inputXmlPath = input;
+                    inputProductXml = S2NamingConventionUtils.getProductXmlFromGranuleXml(inputXmlPath,getProductXmlREGEXs());
                     inputType = S2Config.Sentinel2InputType.INPUT_TYPE_GRANULE_METADATA;
                 }
             }
@@ -186,10 +199,10 @@ public class SAFENamingConvention implements INamingConvention{
         }
 
         //TODO implement an specific methd for each namingConvention
-        level = S2ProductNamingManager.getLevel(inputXmlPath,inputType);
+        level = S2ProductNamingUtils.getLevel(inputXmlPath, inputType);
 
         if(level == S2Config.Sentinel2ProductLevel.L1C || level == S2Config.Sentinel2ProductLevel.L2A || level == S2Config.Sentinel2ProductLevel.L3) {
-            epsgCodeList = S2ProductNamingManager.getEpsgCodeList(inputXmlPath, inputType);
+            epsgCodeList = S2ProductNamingUtils.getEpsgCodeList(inputXmlPath, inputType);
         }
 
         if(level == S2Config.Sentinel2ProductLevel.L2A || level == S2Config.Sentinel2ProductLevel.L3) {
@@ -215,53 +228,11 @@ public class SAFENamingConvention implements INamingConvention{
     }
 
     private Path getXmlProductFromDir(Path path) {
-
-        if(!Files.isDirectory(path)) {
-            return null;
-        }
-        Pattern productPattern = Pattern.compile(PRODUCT_XML_REGEX);
-
-        String[] listXmlFiles = path.toFile().list((f, s) -> s.endsWith(".xml"));
-        String xmlFile = "";
-        int availableXmlCount = 0;
-
-        for(String xml : listXmlFiles) {
-            if (productPattern.matcher(xml).matches()) {
-                xmlFile = xml;
-                availableXmlCount++;
-            }
-        }
-
-        if(availableXmlCount != 1) {
-            return null;
-        }
-
-        return path.resolve(xmlFile);
+        return S2NamingConventionUtils.getFileFromDir(path, getProductXmlREGEXs());
     }
 
     private Path getXmlGranuleFromDir(Path path) {
-
-        if(!Files.isDirectory(path)) {
-            return null;
-        }
-        Pattern granulePattern = Pattern.compile(GRANULE_XML_REGEX);
-
-        String[] listXmlFiles = path.toFile().list((f, s) -> s.endsWith(".xml"));
-        String xmlFile = "";
-        int availableXmlCount = 0;
-
-        for(String xml : listXmlFiles) {
-            if (granulePattern.matcher(xml).matches()) {
-                xmlFile = xml;
-                availableXmlCount++;
-            }
-        }
-
-        if(availableXmlCount != 1) {
-            return null;
-        }
-
-        return path.resolve(xmlFile);
+        return S2NamingConventionUtils.getFileFromDir(path, getGranuleXmlREGEXs());
     }
 
 

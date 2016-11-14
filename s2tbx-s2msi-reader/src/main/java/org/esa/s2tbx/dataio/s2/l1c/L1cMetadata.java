@@ -22,6 +22,8 @@ import org.esa.s2tbx.dataio.s2.S2Config;
 import org.esa.s2tbx.dataio.s2.S2Metadata;
 import org.esa.s2tbx.dataio.s2.S2ProductNamingUtils;
 import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
+import org.esa.s2tbx.dataio.s2.filepatterns.INamingConvention;
+import org.esa.s2tbx.dataio.s2.filepatterns.S2NamingConventionUtils;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.util.SystemUtils;
 import org.xml.sax.SAXException;
@@ -30,6 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -46,25 +49,23 @@ public class L1cMetadata extends S2Metadata {
 
     protected Logger logger = SystemUtils.LOG;
 
-    public static L1cMetadata parseHeader(File file, String granuleName, S2Config config, String epsg, boolean isAGranule) throws IOException, ParserConfigurationException, SAXException {
-        return new L1cMetadata(file.toPath(), granuleName, config, epsg, isAGranule);
+    public static L1cMetadata parseHeader(File file, String granuleName, S2Config config, String epsg, boolean isAGranule, INamingConvention namingConvention) throws IOException, ParserConfigurationException, SAXException {
+        return new L1cMetadata(file.toPath(), granuleName, config, epsg, isAGranule, namingConvention);
     }
 
 
-    private L1cMetadata(Path path, String granuleName, S2Config s2config, String epsg, boolean isAGranule) throws IOException, ParserConfigurationException, SAXException {
+    private L1cMetadata(Path path, String granuleName, S2Config s2config, String epsg, boolean isAGranule, INamingConvention namingConvention) throws IOException, ParserConfigurationException, SAXException {
         super(s2config);
         resetTileList();
-        boolean isGranuleMetadata = isAGranule;
 
-        if(!isGranuleMetadata) {
-            initProduct(path, granuleName, epsg);
+        if(!isAGranule) {
+            initProduct(path, granuleName, epsg, namingConvention);
         } else {
-            initTile(path, epsg);
+            initTile(path, epsg, namingConvention);
         }
-        //TODO
     }
 
-    private void initProduct(Path path, String granuleName, String epsg) throws IOException, ParserConfigurationException, SAXException {
+    private void initProduct(Path path, String granuleName, String epsg, INamingConvention namingConvention) throws IOException, ParserConfigurationException, SAXException {
         IL1cProductMetadata metadataProduct = L1cMetadataFactory.createL1cProductMetadata(path);
         setFormat(metadataProduct.getFormat());
         setProductCharacteristics(metadataProduct.getProductOrganization(path));
@@ -74,72 +75,45 @@ public class L1cMetadata extends S2Metadata {
         if (granuleName == null) {
             tileNames = metadataProduct.getTiles();
         } else {
-            Collection<String> tileNamesAux = metadataProduct.getTiles();
-
-            for(String tileNameAux : tileNamesAux) {
-                String auxTileId = S2ProductNamingUtils.getTileIdFromString(tileNameAux);
-                if(auxTileId.equals(S2ProductNamingUtils.getTileIdFromString(granuleName))) {
-                    tileNames = Collections.singletonList(tileNameAux);
-                    break;
-                }
+            //the granule name is the name of the folder. Depending on the naming convention
+            //it is the same than the tileNames or not. To find the granuleId between the tiles
+            //it is needed to use the namingConvention
+            String granuleId = namingConvention.findGranuleId(metadataProduct.getTiles(),granuleName);
+            if(granuleId == null) {
+                throw new IOException(String.format("Unable to find %s into the available product granules", granuleName));
             }
+            tileNames = Collections.singletonList(granuleId);
         }
 
         //add product metadata
         getMetadataElements().add(metadataProduct.getMetadataElement());
 
         //add datastrip metadatas
-        for(Path datastripFolder : S2ProductNamingUtils.getDatastripsFromProductXml(path)) {
-            Path datastripPath = S2ProductNamingUtils.getXmlFromDir(datastripFolder);
-            if(datastripPath != null) {
+        for(Path datastripPath : namingConvention.getDatastripXmlPaths()) {
                 IL1cDatastripMetadata metadataDatastrip = L1cMetadataFactory.createL1cDatastripMetadata(datastripPath);
                 getMetadataElements().add(metadataDatastrip.getMetadataElement());
-            }
         }
 
-
-        ArrayList<Path> granulePaths = S2ProductNamingUtils.getTilesFromProductXml(path);
         ArrayList<Path> granuleMetadataPathList = new ArrayList<>();
         for (String tileName : tileNames) {
-            S2ProductNamingUtils.getTileIdFromString(tileName);
-            String tileId = S2ProductNamingUtils.getTileIdFromString(tileName);
-            if(tileId == null) {
-                continue;
+            Path folder = namingConvention.findGranuleFolderFromTileId(tileName);
+            Path xml = namingConvention.findXmlFromTileId(tileName);
+            if(folder == null || xml == null) {
+                String errorMessage = "Corrupted product: the file for the granule " + tileName + " is missing";
+                logger.log(Level.WARNING, errorMessage);
             }
-
-            for(Path granulePath : granulePaths) {
-                String tileIdAux = S2ProductNamingUtils.getTileIdFromString(granulePath.getFileName().toString());
-                if(tileId.equals(tileIdAux)) {
-                    resourceResolver.put(tileName,granulePath);
-                    Path nestedGranuleMetadata = S2ProductNamingUtils.getXmlFromDir(granulePath);
-                    if(nestedGranuleMetadata != null) {
-                        granuleMetadataPathList.add(nestedGranuleMetadata);
-                        //TODO notificar algo si no lo encuentra
-                    }
-                }
-            }
-
-            /*if (aGranuleDir != null) {
-                String theName = aGranuleDir.getMetadataFilename().name;
-
-                Path nestedGranuleMetadata = path.resolveSibling("GRANULE").resolve(tileName).resolve(theName);
-                if (Files.exists(nestedGranuleMetadata)) {
-                    granuleMetadataPathList.add(nestedGranuleMetadata);
-                } else {
-                    String errorMessage = "Corrupted product: the file for the granule " + tileName + " is missing";
-                    logger.log(Level.WARNING, errorMessage);
-                }
-            }*/
+            resourceResolver.put(tileName,folder);
+            granuleMetadataPathList.add(xml);
         }
 
         //Init Tiles
         for (Path granuleMetadataPath : granuleMetadataPathList) {
-            initTile(granuleMetadataPath, epsg);
+            initTile(granuleMetadataPath, epsg, namingConvention);
         }
     }
 
 
-    private void initTile(Path path, String epsg) throws IOException, ParserConfigurationException, SAXException {
+    private void initTile(Path path, String epsg, INamingConvention namingConvention) throws IOException, ParserConfigurationException, SAXException {
 
         IL1cGranuleMetadata granuleMetadata = L1cMetadataFactory.createL1cGranuleMetadata(path);
 

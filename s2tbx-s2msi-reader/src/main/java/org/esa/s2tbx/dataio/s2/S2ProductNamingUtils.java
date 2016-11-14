@@ -1,5 +1,6 @@
 package org.esa.s2tbx.dataio.s2;
 
+import org.esa.s2tbx.dataio.s2.filepatterns.S2NamingConventionUtils;
 import org.esa.s2tbx.dataio.s2.ortho.S2CRSHelper;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.math.Array;
@@ -11,17 +12,28 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by W7 on 26/10/2016.
+ * Created by obarrilero on 26/10/2016.
+ *
+ * Common utils to validate the product structure and to obtain some basic information
+ * by using only the product structure and filenames. This class do not have into account any REGEX
+ * in xml, granules, datastrip...
+ * When possible, it is recommended to use the the namingConvention utils because they
+ * use the different REGEXs to check the filenames and implement optimized methods depending on
+ * the product format.
  */
 public class S2ProductNamingUtils {
 
+    // list of files to be ignored when searching xml files into a folder
     private static String[] EXCLUDED_XML = {"INSPIRE","L2A_Manifest", "manifest"};
+
+    //Pattern used to find the tile identifier in a string
     private static String SIMPLIFIED_TILE_ID_REGEX = "(.*)(T[0-9]{2}[A-Z]{3})(.*)";
 
     /**
@@ -303,5 +315,30 @@ public class S2ProductNamingUtils {
         return epsgCode;
     }
 
+    /**
+     * Search the tileId from granuleFolder (TXXABC) and return the granuleId in
+     * availableGranuleIds which contains the same. If it is not found returns null
+     * @param availableGranuleIds
+     * @param granuleFolder
+     * @return
+     */
+    public static String searchGranuleId(Collection<String> availableGranuleIds, String granuleFolder) {
+        for(String tileName : availableGranuleIds) {
+            String auxTileId = getTileIdFromString(tileName);
+            if(auxTileId.equals(getTileIdFromString(granuleFolder))) {
+                return tileName;
+            }
+        }
+        return null;
+    }
 
+    public static boolean hasValidStructure(S2Config.Sentinel2InputType inputType, Path xmlPath) {
+        if(inputType == S2Config.Sentinel2InputType.INPUT_TYPE_PRODUCT_METADATA) {
+            return S2ProductNamingUtils.checkStructureFromProductXml(xmlPath);
+        }
+        if(inputType == S2Config.Sentinel2InputType.INPUT_TYPE_GRANULE_METADATA) {
+            return S2ProductNamingUtils.checkStructureFromGranuleXml(xmlPath);
+        }
+        return false;
+    }
 }

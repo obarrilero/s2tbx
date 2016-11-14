@@ -5,29 +5,33 @@ import org.esa.s2tbx.dataio.s2.S2SpatialResolution;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 
 /**
  * Created by obarrile on 02/11/2016.
  */
 public interface INamingConvention {
-    public String[] getProductREGEXs();
-    public String[] getProductXmlREGEXs();
-    public String[] getGranuleREGEXs();
-    public String[] getGranuleXmlREGEXs();
-    public String[] getDatastripREGEXs();
-    public String[] getDatastripXmlREGEXs();
-    public boolean matches(String filename);
-    public boolean hasValidStructure();
-    public Path getXmlFromDir(Path path);
-    public S2Config.Sentinel2InputType getInputType();
-    public S2Config.Sentinel2ProductLevel getProductLevel();
-    public Set<String> getEPSGList();
-    public Path getInputXml();
-    public Path getInputProductXml();
-    public S2SpatialResolution getResolution();
-    public String getProductName();
-    public boolean matchesProductMetadata(String filename);
-    public ArrayList<Path> getDatastripXmlPaths();
-    public ArrayList<Path> getGranulesXmlPaths();
+    String[] getProductREGEXs();
+    String[] getProductXmlREGEXs();
+    String[] getGranuleREGEXs();
+    String[] getGranuleXmlREGEXs();
+    String[] getDatastripREGEXs();
+    String[] getDatastripXmlREGEXs();
+    boolean matches(String filename);
+    boolean hasValidStructure();
+    Path getXmlFromDir(Path path);
+    S2Config.Sentinel2InputType getInputType();
+    S2Config.Sentinel2ProductLevel getProductLevel();
+    Set<String> getEPSGList();
+    Path getInputXml();
+    Path getInputProductXml();
+    S2SpatialResolution getResolution();
+    String getProductName();
+    boolean matchesProductMetadata(String filename);
+    ArrayList<Path> getDatastripXmlPaths();
+    ArrayList<Path> getGranulesXmlPaths();
+    String findGranuleId(Collection<String> availableGranuleIds, String granuleFolder);
+    Path findGranuleFolderFromTileId(String tileId);
+    Path findXmlFromTileId(String tileID);
 }

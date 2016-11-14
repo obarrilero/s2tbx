@@ -10,6 +10,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -22,7 +23,7 @@ public class SAFECOMPACTNamingConvention implements INamingConvention {
     public static String PRODUCT_XML_REGEX = "MTD_MSIL(1C|2A|03)\\.xml";
     public static String GRANULE_REGEX = "(L1C|L2A|L03)_T([A-Z|0-9|_]{5})_A([0-9]{6})_([0-9]{8}T[0-9]{6})";
     public static String GRANULE_XML_REGEX = "MTD_TL\\.xml";
-    public static String DATASTRIP_REGEX = "DS_([A-Z|0-9]{4})_([0-9]{8}T[0-9]{6})_S([0-9]{8}T[0-9]{6})";
+    public static String DATASTRIP_REGEX = "DS_([A-Z|0-9|_]{4})_([0-9]{8}T[0-9]{6})_S([0-9]{8}T[0-9]{6})";
     public static String DATASTRIP_XML_REGEX = "MTD_DS\\.xml";
     @Override
     public String[] getProductREGEXs() {
@@ -138,8 +139,59 @@ public class SAFECOMPACTNamingConvention implements INamingConvention {
     }
 
     @Override
+    public Path findGranuleFolderFromTileId(String tileId) {
+
+        Path path = null;
+        Path granuleFolder = null;
+        if(getInputType()== S2Config.Sentinel2InputType.INPUT_TYPE_PRODUCT_METADATA) {
+            granuleFolder = inputXmlPath.resolveSibling("GRANULE");
+        } else {
+            if(inputXmlPath.getParent() == null) {
+                return null;
+            }
+            granuleFolder = inputXmlPath.getParent().getParent();
+        }
+        if(granuleFolder == null) {
+            return null;
+        }
+
+        String tileIdentifier = S2ProductNamingUtils.getTileIdFromString(tileId);
+        if(tileIdentifier == null) {
+            return null;
+        }
+
+        ArrayList<Path> granulePaths = S2NamingConventionUtils.getAllFilesFromDir(granuleFolder,getGranuleREGEXs());
+
+        for (Path granulePath : granulePaths) {
+            String tileIdAux = S2ProductNamingUtils.getTileIdFromString(granulePath.getFileName().toString());
+            if (tileIdentifier.equals(tileIdAux)) {
+                path = granulePath;
+            }
+        }
+
+        if(Files.exists(path) && Files.isDirectory(path) && S2NamingConventionUtils.matches(path.getFileName().toString(),getGranuleREGEXs())) {
+            return path;
+        }
+        return null;
+    }
+
+    @Override
+    public Path findXmlFromTileId(String tileID) {
+        Path path = S2NamingConventionUtils.getFileFromDir(findGranuleFolderFromTileId(tileID),getGranuleXmlREGEXs());
+        if(Files.exists(path)) {
+            return path;
+        }
+        return null;
+    }
+
+    @Override
+    public String findGranuleId(Collection<String> availableGranuleIds, String granuleFolder) {
+        return S2ProductNamingUtils.searchGranuleId(availableGranuleIds,granuleFolder);
+    }
+
+    @Override
     public boolean hasValidStructure() {
-        return S2NamingConventionUtils.hasValidStructure(inputType, getInputXml());
+        return S2ProductNamingUtils.hasValidStructure(inputType, getInputXml());
     }
 
     @Override

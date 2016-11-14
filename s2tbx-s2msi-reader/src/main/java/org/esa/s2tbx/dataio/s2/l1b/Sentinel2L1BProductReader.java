@@ -197,32 +197,15 @@ public class Sentinel2L1BProductReader extends Sentinel2ProductReader {
 
         // we need to recover parent metadata file if we have a granule
         if (isAGranule) {
-            granuleDirName = metadataFile.getParentFile().getName();
+
             try {
                 Objects.requireNonNull(metadataFile.getParentFile());
+                granuleDirName = metadataFile.getParentFile().getName();
                 File tileIdFilter = metadataFile.getParentFile();
                 filterTileId = tileIdFilter.getName();
             }   catch (NullPointerException npe){
                 throw new IOException(String.format("Unable to retrieve the product associated to granule metadata file [%s]", metadataFile.getName()));
             }
-            /*try {
-                Objects.requireNonNull(metadataFile.getParentFile().getParentFile());
-                Objects.requireNonNull(metadataFile.getParentFile().getParentFile().getParentFile());
-
-                File up2levels = metadataFile.getParentFile().getParentFile().getParentFile();
-
-                File[] files = up2levels.listFiles();
-                if (files != null) {
-                    for (File f : files) {
-                        if (namingConvention.matchesProductMetadata(f.getName())) {
-                            productMetadataFile = f;
-                            break;
-                        }
-                    }
-                }
-            } catch (NullPointerException npe) {
-                //It is not thrown an exception because it is already possible to read the granule without the product metadata
-            }*/
 
             Path rootMetadataPath = namingConvention.getInputProductXml();
             if(rootMetadataPath != null) {

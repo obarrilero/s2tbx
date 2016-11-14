@@ -9,6 +9,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -127,7 +128,7 @@ public class L1BNamingConvention implements INamingConvention {
 
     @Override
     public boolean hasValidStructure() {
-        return S2NamingConventionUtils.hasValidStructure(inputType, getInputXml());
+        return S2ProductNamingUtils.hasValidStructure(inputType, getInputXml());
     }
 
     @Override
@@ -190,6 +191,41 @@ public class L1BNamingConvention implements INamingConvention {
     @Override
     public ArrayList<Path> getGranulesXmlPaths() {
         return S2NamingConventionUtils.getGranulesXmlPaths(inputType, getInputXml(), getGranuleREGEXs(), getGranuleXmlREGEXs());
+    }
+
+    @Override
+    public Path findGranuleFolderFromTileId(String tileId) {
+        Path path = null;
+        if(getInputType()== S2Config.Sentinel2InputType.INPUT_TYPE_PRODUCT_METADATA) {
+            path = inputXmlPath.resolveSibling("GRANULE").resolve(tileId);
+
+        } else {
+            if(inputXmlPath.getParent() == null) {
+                return null;
+            }
+            path = inputXmlPath.getParent().resolveSibling(tileId);
+        }
+        if(Files.exists(path) && Files.isDirectory(path) && S2NamingConventionUtils.matches(path.getFileName().toString(),getGranuleREGEXs())) {
+            return path;
+        }
+        return null;
+    }
+
+    @Override
+    public Path findXmlFromTileId(String tileID) {
+        Path path = S2NamingConventionUtils.getFileFromDir(findGranuleFolderFromTileId(tileID),getGranuleXmlREGEXs());
+        if(Files.exists(path)) {
+            return path;
+        }
+        return null;
+    }
+
+    @Override
+    public String findGranuleId(Collection<String> availableGranuleIds, String granuleFolder) {
+        if(availableGranuleIds.contains(granuleFolder)) {
+            return granuleFolder;
+        }
+        return null;
     }
 
     private Path getXmlGranuleFromDir(Path path) {

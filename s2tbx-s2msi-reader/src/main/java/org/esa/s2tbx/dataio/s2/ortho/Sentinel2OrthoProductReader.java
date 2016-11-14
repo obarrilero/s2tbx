@@ -124,7 +124,7 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
 
         Objects.requireNonNull(metadataFile);
 
-        boolean isAGranule = /*S2OrthoGranuleMetadataFilename.isGranuleFilename(metadataFile.getName())*/S2ProductNamingUtils.checkStructureFromGranuleXml(metadataFile.toPath());
+        boolean isAGranule = namingConvention.getInputType() == S2Config.Sentinel2InputType.INPUT_TYPE_GRANULE_METADATA/*S2OrthoGranuleMetadataFilename.isGranuleFilename(metadataFile.getName())*//*S2ProductNamingUtils.checkStructureFromGranuleXml(metadataFile.toPath())*/;
         boolean foundProductMetadata = true;
 
         if (isAGranule) {
@@ -139,41 +139,21 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
         SystemUtils.LOG.fine(String.format("[timeprobe] updateTileLayout : %s ms", timeProbe.elapsed(TimeUnit.MILLISECONDS)));
 
 
-        String filterTileId = null;
+        //String filterTileId = null;
         File rootMetaDataFile = null;
         String granuleDirName = null;
 
         timeProbe.reset();
         // we need to recover parent metadata file if we have a granule
         if (isAGranule) {
-            granuleDirName = metadataFile.getParentFile().getName();
             try {
                 Objects.requireNonNull(metadataFile.getParentFile());
-                //Objects.requireNonNull(metadataFile.getParentFile().getParentFile());
-                //Objects.requireNonNull(metadataFile.getParentFile().getParentFile().getParentFile());
+                granuleDirName = metadataFile.getParentFile().getName();
             } catch (NullPointerException npe) {
                 throw new IOException(String.format("Unable to retrieve the product associated to granule metadata file [%s]", metadataFile.getName()));
             }
-
-            //File up2levels = metadataFile.getParentFile().getParentFile().getParentFile();
-            File tileIdFilter = metadataFile.getParentFile();
-
-            filterTileId = tileIdFilter.getName();
-
-            /*Path p = S2ProductNamingUtils.getXmlFromDir(up2levels.toPath());
-            File f = null;
-            if(p != null) {
-                f = p.toFile();
-            }
-            if (f != null) {
-                //for (File f : files) {
-                    //TODO algo mas?????
-                    if (S2ProductNamingUtils.checkStructureFromProductXml(f.toPath())) {
-                        rootMetaDataFile = f;
-                    }
-               // }
-            }*/
-
+            //File tileIdFilter = metadataFile.getParentFile();
+            //filterTileId = tileIdFilter.getName();
             Path rootMetadataPath = namingConvention.getInputProductXml();
             if(rootMetadataPath != null) {
                 rootMetaDataFile = rootMetadataPath.toFile();
@@ -213,7 +193,7 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
 
         S2Metadata.ProductCharacteristics productCharacteristics = metadataHeader.getProductCharacteristics();
 
-        Product product = new Product(/*FileUtils.getFilenameWithoutExtension(rootMetaDataFile)*/namingConvention.getProductName(),
+        Product product = new Product(namingConvention.getProductName(),
                                       "S2_MSI_" + productCharacteristics.getProcessingLevel(),
                                       sceneDescription.getSceneDimension(getProductResolution()).width,
                                       sceneDescription.getSceneDimension(getProductResolution()).height);
@@ -260,7 +240,6 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
             for (S2Metadata.Tile tile : tileList) {
                 S2OrthoGranuleDirFilename gf = S2OrthoGranuleDirFilename.create(tile.getId());
                 if (gf != null) {
-
                     String imgFilename;
                     if(foundProductMetadata) {
                         imgFilename = String.format("GRANULE%s%s%s%s", File.separator, metadataHeader.resolveResource(tile.getId()).getFileName().toString(),
@@ -352,7 +331,6 @@ public abstract class Sentinel2OrthoProductReader extends Sentinel2ProductReader
                     anglesGridsMap.put(tile.getId(), bandAnglesGrids);
                 }
             }
-
             addAnglesBands(product, sceneDescription, anglesGridsMap);
 
             SystemUtils.LOG.fine(String.format("[timeprobe] addTiePointGridBand : %s ms", timeProbe.elapsed(TimeUnit.MILLISECONDS)));

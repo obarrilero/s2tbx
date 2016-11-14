@@ -7,7 +7,10 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -15,6 +18,13 @@ import java.util.regex.Pattern;
  */
 public class S2NamingConventionUtils {
 
+    /**
+     * Checks if a string match with any of the REGEX of namingConvention.
+     * Try productREGEX, productXmlREGEX, GranuleREGEX and granuleXmlREGEX
+     * @param filename
+     * @param namingConvention
+     * @return
+     */
     public static boolean matches(String filename, INamingConvention namingConvention) {
 
         for(String REGEX : namingConvention.getProductREGEXs()) {
@@ -56,16 +66,6 @@ public class S2NamingConventionUtils {
             if (pattern.matcher(filename).matches()) {
                 return true;
             }
-        }
-        return false;
-    }
-
-    public static boolean hasValidStructure(S2Config.Sentinel2InputType inputType, Path xmlPath) {
-        if(inputType == S2Config.Sentinel2InputType.INPUT_TYPE_PRODUCT_METADATA) {
-            return S2ProductNamingUtils.checkStructureFromProductXml(xmlPath);
-        }
-        if(inputType == S2Config.Sentinel2InputType.INPUT_TYPE_GRANULE_METADATA) {
-            return S2ProductNamingUtils.checkStructureFromGranuleXml(xmlPath);
         }
         return false;
     }
@@ -133,6 +133,36 @@ public class S2NamingConventionUtils {
         return path.resolve(xmlFile);
     }
 
+    public static ArrayList<Path> getAllFilesFromDir(Path path, String[] REGEXs) {
+        ArrayList<Path> paths = new ArrayList<>();
+        if(path == null || !Files.isDirectory(path)) {
+            return paths;
+        }
+        if(REGEXs == null) {
+            String[] listFiles = path.toFile().list();
+            for(String file : listFiles) {
+                paths.add(path.resolve(file));
+            }
+            return paths;
+        }
+
+        Pattern[] patterns = new Pattern[REGEXs.length];
+        for(int i = 0 ; i < REGEXs.length ; i++) {
+            patterns[i] = Pattern.compile(REGEXs[i]);
+        }
+
+        String[] listFiles = path.toFile().list();
+        for(String file : listFiles) {
+            for(Pattern pattern : patterns) {
+                if (pattern.matcher(file).matches() ) {
+                    paths.add(path.resolve(file));
+                }
+            }
+        }
+
+        return paths;
+    }
+
     public static ArrayList<Path> getDatastripXmlPaths(S2Config.Sentinel2InputType inputType, Path inputXml, String[] datastripREGEXs, String[] datastripXmlREGEXs) {
         ArrayList<Path> paths = new ArrayList<>();
         if(inputType.equals(S2Config.Sentinel2InputType.INPUT_TYPE_PRODUCT_METADATA)){
@@ -151,6 +181,16 @@ public class S2NamingConventionUtils {
                     }
                 }
             }
+        } else if (inputType.equals(S2Config.Sentinel2InputType.INPUT_TYPE_GRANULE_METADATA)){
+            Path parentPath = inputXml.getParent();
+            if(parentPath == null) {
+                return paths;
+            }
+            Path parentPath2 = parentPath.getParent();
+            if(parentPath2 == null) {
+                return paths;
+            }
+            return getDatastripXmlPaths(S2Config.Sentinel2InputType.INPUT_TYPE_PRODUCT_METADATA,parentPath2,datastripREGEXs,datastripXmlREGEXs);
         }
         return paths;
     }
